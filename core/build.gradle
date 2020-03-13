@@ -1,4 +1,5 @@
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 
 repositories {
   jcenter()
@@ -6,6 +7,9 @@ repositories {
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.70"
+
+  implementation 'com.google.dagger:dagger:2.26'
+  kapt 'com.google.dagger:dagger-compiler:2.26'
 
   testImplementation 'junit:junit:4.12'
 }
