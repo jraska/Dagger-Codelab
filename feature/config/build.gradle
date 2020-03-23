@@ -1,0 +1,13 @@
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+  implementation project(':core')
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+  implementation 'com.google.dagger:dagger:2.27'
+  kapt 'com.google.dagger:dagger-compiler:2.27'
+
+  testImplementation 'junit:junit:4.13'
+}
