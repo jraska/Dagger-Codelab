@@ -3,6 +3,20 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:gravity="center"
+  android:orientation="vertical"
   >
+
+  <Button
+    android:id="@+id/main_hello_button"
+    android:text="@string/hello_dagger"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+
+  <Button
+    android:id="@+id/main_bye_button"
+    android:text="@string/bye_dagger"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
 
 </LinearLayout>
