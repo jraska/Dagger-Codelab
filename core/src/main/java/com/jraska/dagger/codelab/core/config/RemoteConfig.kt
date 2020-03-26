@@ -1,4 +1,4 @@
-package com.jraska.dagger.codelab.core.analytics.config
+package com.jraska.dagger.codelab.core.config
 
 interface RemoteConfig {
   fun getBoolean(key: String): Boolean
