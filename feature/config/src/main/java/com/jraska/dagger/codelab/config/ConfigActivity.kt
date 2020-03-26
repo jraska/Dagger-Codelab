@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ConfigActivity : AppCompatActivity() {
 
   @Inject
-  lateinit var inMemoryConfig: InMemoryConfig
+  lateinit var mutableConfig: MutableConfig
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class ConfigActivity : AppCompatActivity() {
   private fun setupView() {
     val recyclerView = RecyclerView(this)
     recyclerView.layoutManager = LinearLayoutManager(this)
-    recyclerView.adapter = ConfigAdapter(inMemoryConfig)
+    recyclerView.adapter = ConfigAdapter(mutableConfig)
     setContentView(recyclerView)
   }
 
@@ -40,8 +40,8 @@ class ConfigActivity : AppCompatActivity() {
     }
   }
 
-  class ConfigAdapter(val inMemoryConfig: InMemoryConfig) : RecyclerView.Adapter<SimpleHolder>() {
-    val configKeys = inMemoryConfig.keys().toList()
+  class ConfigAdapter(val config: MutableConfig) : RecyclerView.Adapter<SimpleHolder>() {
+    val configKeys = config.keys().toList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleHolder {
       return SimpleHolder(Switch(parent.context))
@@ -53,9 +53,9 @@ class ConfigActivity : AppCompatActivity() {
       val key = configKeys[position]
       switch.text = key
 
-      val enabled = inMemoryConfig.getBoolean(key)
+      val enabled = config.getBoolean(key)
       switch.isChecked = enabled
-      switch.setOnCheckedChangeListener { _, isChecked -> inMemoryConfig.set(key, isChecked) }
+      switch.setOnCheckedChangeListener { _, isChecked -> config.set(key, isChecked) }
     }
 
     override fun getItemCount() = configKeys.size

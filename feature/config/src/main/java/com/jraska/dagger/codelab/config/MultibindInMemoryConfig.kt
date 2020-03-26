@@ -2,8 +2,11 @@ package com.jraska.dagger.codelab.config
 
 import javax.inject.Inject
 
-class InMemoryConfig @Inject constructor() : MutableConfig {
-  private val configs = mutableMapOf("bye_button" to true)
+class MultibindInMemoryConfig @Inject constructor(
+  @JvmSuppressWildcards
+  val initialState: Map<String, Boolean>
+) : MutableConfig {
+  private val configs = initialState.toMutableMap()
 
   override fun set(key: String, value: Boolean) {
     configs[key] = value
