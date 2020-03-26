@@ -1,10 +1,15 @@
 package com.jraska.dagger.codelab.config
 
-import com.jraska.dagger.codelab.core.analytics.config.RemoteConfig
-import javax.inject.Inject
+import com.jraska.dagger.codelab.core.config.RemoteConfig
 
-internal class InMemoryConfig @Inject constructor() : RemoteConfig {
-  private val configs = mutableMapOf<String, Boolean>("bye_button" to true)
+class InMemoryConfig : RemoteConfig {
+  private val configs = mutableMapOf("bye_button" to true)
+
+  internal fun set(key: String, value: Boolean) {
+    configs[key] = value
+  }
+
+  internal fun keys(): Set<String> = configs.keys
 
   override fun getBoolean(key: String): Boolean {
     return configs[key] ?: false

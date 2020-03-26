@@ -1,0 +1,8 @@
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.jraska.dagger.codelab.config">
+
+  <application>
+    <activity android:name=".ConfigActivity" />
+  </application>
+</manifest>
