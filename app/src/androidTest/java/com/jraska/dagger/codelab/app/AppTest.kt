@@ -2,6 +2,7 @@ package com.jraska.dagger.codelab.app
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -26,7 +27,7 @@ class AppTest {
     onView(withId(R.id.fab)).perform(click())
     onView(withText("bye_button")).perform(click())
 
-    Espresso.pressBack()
+    pressBack()
 
     onView(withId(R.id.main_bye_button)).check(matches(not(isDisplayed())))
   }
