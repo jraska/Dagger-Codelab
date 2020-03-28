@@ -8,7 +8,7 @@
   >
   <fragment
     android:id="@+id/fragment_main"
-    android:name="com.jraska.dagger.codelab.app.MainFragment"
+    android:name="com.jraska.dagger.codelab.app.ui.MainFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>
 

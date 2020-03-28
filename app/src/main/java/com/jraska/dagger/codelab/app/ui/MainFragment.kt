@@ -1,10 +1,12 @@
-package com.jraska.dagger.codelab.app
+package com.jraska.dagger.codelab.app.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.jraska.dagger.codelab.app.DaggerApp
+import com.jraska.dagger.codelab.app.R
 import com.jraska.dagger.codelab.core.analytics.EventAnalytics
 import com.jraska.dagger.codelab.core.config.RemoteConfig
 import javax.inject.Inject

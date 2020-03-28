@@ -1,4 +1,4 @@
-package com.jraska.dagger.codelab.config
+package com.jraska.dagger.codelab.config.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -9,6 +9,7 @@ import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.jraska.dagger.codelab.config.MutableConfig
 import com.jraska.dagger.codelab.config.di.ConfigComponent
 import com.jraska.dagger.codelab.core.di.HasAppComponent
 import javax.inject.Inject
@@ -41,7 +42,7 @@ class ConfigActivity : AppCompatActivity() {
   }
 
   class ConfigAdapter(val config: MutableConfig) : RecyclerView.Adapter<SimpleHolder>() {
-    val configKeys = config.keys().toList()
+    private val configKeys = config.keys().toList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleHolder {
       return SimpleHolder(Switch(parent.context))
