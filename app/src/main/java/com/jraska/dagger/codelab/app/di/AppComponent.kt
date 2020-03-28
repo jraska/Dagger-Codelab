@@ -5,12 +5,13 @@ import com.jraska.dagger.codelab.app.MainActivity
 import com.jraska.dagger.codelab.app.MainFragment
 import com.jraska.dagger.codelab.config.di.ConfigComponent
 import com.jraska.dagger.codelab.config.di.ConfigModule
-import com.jraska.dagger.codelab.core.analytics.AnalyticsModule
+import com.jraska.dagger.codelab.core.analytics.Analytics
+import com.jraska.dagger.codelab.core.analytics.AnalyticsComponent
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
-@Component(modules = [AnalyticsModule::class, ConfigModule::class])
+@Component(modules = [ConfigModule::class], dependencies = [Analytics::class])
 @Singleton
 interface AppComponent : ConfigComponent {
   fun inject(activity: MainActivity)
@@ -22,6 +23,8 @@ interface AppComponent : ConfigComponent {
 
     @BindsInstance
     fun context(context: Context): Builder
+
+    fun analytics(analytics: Analytics): Builder
 
     fun build(): AppComponent
   }

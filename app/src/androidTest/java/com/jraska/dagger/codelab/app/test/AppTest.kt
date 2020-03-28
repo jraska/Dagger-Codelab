@@ -1,4 +1,4 @@
-package com.jraska.dagger.codelab.app
+package com.jraska.dagger.codelab.app.test
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
@@ -8,6 +8,9 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.rule.ActivityTestRule
+import com.jraska.dagger.codelab.app.MainActivity
+import com.jraska.dagger.codelab.app.R
+import com.jraska.dagger.codelab.app.reportedAnalytics
 import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
@@ -21,10 +24,16 @@ class AppTest {
     onView(withId(R.id.main_bye_button)).check(matches(isDisplayed()))
 
     onView(withId(R.id.fab)).perform(click())
+    assertEventReported()
     onView(withText("bye_button")).perform(click())
 
     pressBack()
 
     onView(withId(R.id.main_bye_button)).check(matches(not(isDisplayed())))
+  }
+
+  private fun assertEventReported() {
+    val event = activityRule.reportedAnalytics().findLast { it.key == "main_onFabClick" }
+    assert(event != null)
   }
 }

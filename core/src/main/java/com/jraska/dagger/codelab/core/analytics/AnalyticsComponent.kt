@@ -5,6 +5,6 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [AnalyticsModule::class])
-interface AnalyticsComponent {
-  fun eventAnalytics(): EventAnalytics
+interface AnalyticsComponent : Analytics {
+  override fun eventAnalytics(): EventAnalytics
 }
