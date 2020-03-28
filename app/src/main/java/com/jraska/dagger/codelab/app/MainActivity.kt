@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.jraska.dagger.codelab.config.ConfigActivity
+import com.jraska.dagger.codelab.core.analytics.AnalyticsEvent
 import com.jraska.dagger.codelab.core.analytics.EventAnalytics
 import javax.inject.Inject
 
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     DaggerApp.of(this).appComponent.inject(this)
 
     findViewById<View>(R.id.fab).setOnClickListener {
-      eventAnalytics.reportEvent("main_onFabClick")
+      eventAnalytics.reportEvent(AnalyticsEvent.create("main_onFabClick"))
       ConfigActivity.start(this)
     }
   }
