@@ -14,25 +14,15 @@ data class AnalyticsEvent(
       return this
     }
 
-    fun addProperty(name: String, value: String): Builder {
-      return addAny(name, value)
-    }
+    fun addProperty(name: String, value: String) = addAny(name, value)
 
-    fun addProperty(name: String, value: Double): Builder {
-      return addAny(name, value)
-    }
+    fun addProperty(name: String, value: Double)= addAny(name, value)
 
-    fun addProperty(name: String, value: Boolean): Builder {
-      return addAny(name, value)
-    }
+    fun addProperty(name: String, value: Boolean)= addAny(name, value)
 
-    fun addProperty(name: String, value: Int): Builder {
-      return addAny(name, value)
-    }
+    fun addProperty(name: String, value: Int)= addAny(name, value)
 
-    fun addProperty(name: String, value: Long): Builder {
-      return addAny(name, value)
-    }
+    fun addProperty(name: String, value: Long)= addAny(name, value)
 
     fun build(): AnalyticsEvent {
       return AnalyticsEvent(name, Collections.unmodifiableMap(properties))
@@ -40,12 +30,12 @@ data class AnalyticsEvent(
   }
 
   companion object {
-    fun create(name: String): AnalyticsEvent {
-      return AnalyticsEvent(name, emptyMap())
+    fun create(key: String): AnalyticsEvent {
+      return AnalyticsEvent(key, emptyMap())
     }
 
-    fun builder(name: String): Builder {
-      return Builder(name)
+    fun builder(key: String): Builder {
+      return Builder(key)
     }
   }
 }

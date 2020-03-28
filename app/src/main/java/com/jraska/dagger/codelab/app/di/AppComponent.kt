@@ -1,12 +1,11 @@
 package com.jraska.dagger.codelab.app.di
 
 import android.content.Context
-import com.jraska.dagger.codelab.app.MainActivity
-import com.jraska.dagger.codelab.app.MainFragment
+import com.jraska.dagger.codelab.app.ui.MainActivity
+import com.jraska.dagger.codelab.app.ui.MainFragment
 import com.jraska.dagger.codelab.config.di.ConfigComponent
 import com.jraska.dagger.codelab.config.di.ConfigModule
 import com.jraska.dagger.codelab.core.analytics.Analytics
-import com.jraska.dagger.codelab.core.analytics.AnalyticsComponent
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton

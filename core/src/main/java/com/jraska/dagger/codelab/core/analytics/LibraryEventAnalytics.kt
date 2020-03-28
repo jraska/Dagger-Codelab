@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class LibraryEventAnalytics @Inject constructor(
   val library: AnalyticsLibrary,
-  private val analyticsFilter: AnalyticsFilter
+  val analyticsFilter: AnalyticsFilter
 ) : EventAnalytics {
   override fun reportEvent(event: AnalyticsEvent) {
     if (analyticsFilter.accept(event.key)) {
