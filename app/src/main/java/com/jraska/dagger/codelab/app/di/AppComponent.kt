@@ -5,7 +5,7 @@ import com.jraska.dagger.codelab.app.ui.MainActivity
 import com.jraska.dagger.codelab.app.ui.MainFragment
 import com.jraska.dagger.codelab.config.di.ConfigComponent
 import com.jraska.dagger.codelab.config.di.ConfigModule
-import com.jraska.dagger.codelab.core.analytics.Analytics
+import com.jraska.dagger.codelab.core.analytics.di.Analytics
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
