@@ -1,73 +1,126 @@
-# Dagger-Codelab
-Codelab to teach and demonstrate usage of dependency injection with Dagger 2
 
-# What you will learn
-- About dependency injection(DI) and Inversion of Control(IoC)
-  - Introduction to the problem, why it matters.
-  - Why we use DI frameworks - which problems they solve for us.
-  - Brief history of DI. Spring -> Guice -> Dagger 1 -> **Dagger 2**
-- Basics of Dagger 
+# Dagger-Codelab - Section 1 - Basics
+
+## What you will learn
+- Basics of Dagger
   - How to setup Dagger in your project.
-  - How to use `@Inject` annotation, craeting simple `@Component`
+  - How to use `@Inject` annotation, creating simple `@Component`
   - Adding `@Module`. Discussion when to use modules and when `@Inject` annotation.
-  - Usage of simle `@Singleton` scope.
+  - Usage of simple `@Singleton` scope.
   - Exploring Dagger generated source code and learning from it.
-- Wiring together with Android
-  - Where to create and hold instances of components.
-  - Injecting Activities, Injecting Fragments.
-  - Using `@BindsInstance` to bind objects we don't own.
-- Multi-module project setup
-  - How to compose modules together within `AppComponent`
-  - Injecting Activity/Fragment and other dependencies within separate module.
-  - Sharing instances with other modules.
-- Multibindings
-  - Composing `@IntoMap` and `@IntoSet`.
-  - Plugin based development within multi-module project.
-  - Discuss which problems can multibinding solve.
-- Instrumented Testing
-  - How to replace dependencies within `androidTest`.
-  - Using component dependency to replace dependencies in tests.
-  - How to assert on your analytic events.
 
-# Why this codelab?
-- Primariliy this should be a learnign resource for any engineer who wants to learn or recap Dagger usage.
-- The codelab format is chosen with the belief, that first hand experience leaves stronger memories and the skills are truly learned.
-- Dagger became more complex over years - making onboarding of new engineers harder.
-- Dagger became also misused or overused. New engineers see already brownfield and Dagger seems like one of the devils responsible for this leading to lower trust in the tool. Dagger can be almost invisible in your project.
-- We already forgot about the problems we had before Dagger like runtime DI resolution. It is important to be reminded about these problems.
+# Section 1: Basics - Instructions
+First please have a look into the `:core` module and into `com.jraska.dagger.codelab.core.analytics` package. Our first exercise will take place happen here.
 
-# How to use this Codelab
-- Codelab is split into few smaller sections - each of them can be run independently.
-- Each section has a branch with a format `{section number}-{area of focus}` e.g. `01-basics`. The branch with higher number is always the solution of the previous section. `master` branch is the final solution of present tasks.
-- You can run the codelab yourslef, by following the instructions within each sections.
-- In case of any question, please feel free to [create an issue](https://github.com/jraska/Dagger-Codelab/issues/new) in this repo.
+You can see interface `EventAnalytics`, which can model a way how our application will publish `AnalyticsEvent` objects. Its implementation `LibraryEventAnalytics` uses `AnalyticsFilter` to filter too long events and has `.lib.AnalyticsLibrary` to model some external dependency.
+You can imagine Google Analytics, Firebase or any other external anlytics framework in place of `.lib.AnalyticsLibrary`
 
-## Basics
+<img width="350" alt="Screenshot 2020-03-30 at 00 09 20" src="https://user-images.githubusercontent.com/6277721/77862570-c4862d80-721c-11ea-8685-01686ad6524a.png">
 
+There is also `AnalyticsComponent`, which will be our representation of dependency graph and will provide us instances. You can see manual composing of these dependencies within `AnalyticsComponentTest` in `test` sources.
 
-## Wiring with Android
+## Task 1: Adding Dagger 2 dependency.
+To be even able to Dagger 2, we need to add it as a dependency. You can check [Dagger releases] for latest version. We need to add into
 
+`core/build.gradle`
+```
+dependencies {
+// ...
+    implementation 'com.google.dagger:dagger:2.27'
+    kapt 'com.google.dagger:dagger-compiler:2.27'
+// ...
+}
 
-## Multiple modules setup
+```
+and sync Android Studio. `implementation` is here to see the API and internal code from Dagger, `kapt` dependency pulls in the Dagger annotation processor.
 
+## Task 2: Adding @Inject annotation
+Dagger can satisfy dependencies of any instance, which declares its constructor with `@javax.inject.Inject` annotation. We can start by adding a `@Inject` constructor to `LibraryEventAnalytics`
+```
+class LibraryEventAnalytics @Inject constructor( // LibraryEventAnalytics.kt
+```
+This can be enough to actually see Dagger in action. We need to now make our `AnalyticsComponent` a Dagger component. This can be easily done by annotating it with `@dagger.Component` annotation.
 
-## Multibinding
+```
+@Component
+interface AnalyticsComponent { // AnalyticsComponent.kt
+```
 
+We can try to build our project now, but we receive error message:
+```
+[Dagger/MissingBinding] com.jraska.dagger.codelab.core.analytics.lib.AnalyticsLibrary cannot be provided without an @Inject constructor or an @Provides-annotated method.
+public abstract interface AnalyticsComponent {
+                ^
+      com.jraska.dagger.codelab.core.analytics.lib.AnalyticsLibrary is injected at
+          com.jraska.dagger.codelab.core.analytics.LibraryEventAnalytics(arg0, …)
+      com.jraska.dagger.codelab.core.analytics.LibraryEventAnalytics is provided at
+          com.jraska.dagger.codelab.core.analytics.di.AnalyticsComponent.eventAnalytics()
+```
+This part is important, because we will face this very often with Dagger and it is very useful to understand those messages. There is some binding missing and by checking the message we can read that Dagger cannot see `AnalyticsLibrary`, which is natural, because we didn't tell Dagger how to create its instances.
+The error message also shows the path, where is `AnalyticsLibrary` requested to help us find the problem.
+Current situation from Daggers point of view looks now like this:
 
-## Component dependency, Testing
+<img width="350" alt="Screenshot 2020-03-30 at 00 09 34" src="https://user-images.githubusercontent.com/6277721/77862697-71f94100-721d-11ea-9270-6bc303c76c3c.png">
 
+`AnalyticsLibrary` here is simulating a library we don't own and therefore we cannot just add `@Inject` annotation to its constructor. Instead we need to create `@dagger.Module`.
 
-# References
-- [Android docs](https://developer.android.com/training/dependency-injection/dagger-basics), 
-  - [Multi-Module setup](https://developer.android.com/training/dependency-injection/dagger-multi-module)
-- [Google Codelab](https://codelabs.developers.google.com/codelabs/android-dagger)
-- [Dagger docs](https://dagger.dev)
-  - [Android setup](https://dagger.dev/android) explains why we use field injection.
-  - [Official tutorial](https://dagger.dev/tutorial/)
-  - [Multibindings](https://dagger.dev/multibindings.html)
-  - [`@Binds`/`@Provides` discussion](https://dagger.dev/faq.html#what-do-i-do-instead)
-- [Gregory Kick - DAGGER 2 - A New Type of dependency injection (2014)](https://www.youtube.com/watch?v=oK_XtfXPkqw) - Recommended resource to understand the history of DI and why Dagger 2 exists.
-- [Gregory Kick - Dagger to on MCE^3 (2016)](https://www.youtube.com/watch?v=iwjXqRlEevg) - Introduction of main Dagger features as we know them now like Multibindings and the rationale behind them.
-- [Josef Raska - 3 Years of Happy Marriage With Dagger 2 (2018)](https://proandroiddev.com/3-years-of-happy-marriage-with-dagger-2-b1e1e0febaa7) - Recap of which problems Dagger solved and how it moved Android development forward, even if it might not seem obvious now. 
-- [Jake Wharton - Helping Dagger help you (2018)](https://jakewharton.com/helping-dagger-help-you/) - Showcase how far you can go with Dagger features and improvements.
+## Task 3: Adding a module
+We have already prepared class `AnalyticsModule`. To make it a module, we need to add `@Module` annotation to its declaration:
+```
+@Module
+object AnalyticsModule { // AnalyticsModule.kt
+```
+`AnalyticsComponent` needs to be instructed to consider this module to its graph. Annotation `@dagger.Component` has a `dependencies` property. where we can list all our classes, which happen to be a module.
 
+```
+@Component(modules = [AnalyticsModule::class])
+interface AnalyticsComponent { // AnalyticsComponent.kt
+```
+
+## Task 4: Adding @Provides method
+Now we have our `AnalyticsModule` and we can start adding bindings to it. We can tell Dagger how to get instances of `AnalyticsLibrary` like this:
+
+```
+@Provides // AnalyticsModule.kt
+fun provideAnalyticsLibrary(): AnalyticsLibrary {
+  return AnalyticsLibrary()
+}
+```
+
+Now we can try to compile again and we receive again an error message telling us that we still miss `AnalyticsFilter` in our component graph.
+<img width="450" alt="Screenshot 2020-03-30 at 00 42 37" src="https://user-images.githubusercontent.com/6277721/77862997-6a3a9c00-721f-11ea-90e0-ee028125d6df.png">
+
+We can solve this by adding `@Inject constructor`to it:
+```
+class AnalyticsFilter @Inject constructor() { // AnalyticsFilter.kt
+```
+With this, our code will finally build and Dagger generates the component implementation.
+<img width="450" alt="Screenshot 2020-03-30 at 00 42 55" src="https://user-images.githubusercontent.com/6277721/77863018-8dfde200-721f-11ea-9b98-2923bfcde6df.png">
+
+## Task 5: Using generated DaggerAnalyticsComponent
+Now we can look again into `AnalyticsComponentTest` . We can replace manual creation of dependencies to usage of generated `DaggerAnalyticsComponent`.
+```
+val analyticsComponent = DaggerAnalyticsComponent.create() // AnalyticsComponentTest.kt
+```
+Test will now compile and we will see a failure of test. The reason now is that method `eventAnalytics()` always creates a new instance of `LibraryEventAnalytics`. We can look at the generated `DaggerAnalyticsComponent` where we can see the `new` call for each `eventAnalytics`.
+To change this behaviour, we will need a scope.
+
+## Task 6: Using Singleton scope
+Using a scope means first marking the component as scoped. This is done by annotating the `AnalyticsComponent` with `@javax.inject.Singleton` annotation.
+
+```
+@Singleton // AnalyticsComponent.kt
+@Component(modules = [AnalyticsModule::class])
+```
+We also need to mark the `provideAnalyticsLibrary` as being scoped to `@Singleton`.
+```
+@Provides // AnalyticsModule.kt
+@Singleton
+fun provideAnalyticsLibrary(): AnalyticsLibrary {
+```
+
+`AnalyticsComponentTest` will now pass and there will be only one instance of `AnalyticsLibrary` created. We can check `DaggerAnalyticsComponent` how it is done. Dagger uses `DoubleCheck` implementation as an instance holder.
+
+## Task 7: Binding an implementation to an interface
+
+TBD
