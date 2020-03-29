@@ -12,15 +12,12 @@ import com.jraska.dagger.codelab.core.config.RemoteConfig
 import javax.inject.Inject
 
 class MainFragment : Fragment() {
-  @Inject
-  lateinit var eventAnalytics: EventAnalytics
 
-  @Inject
+  lateinit var eventAnalytics: EventAnalytics
   lateinit var config: RemoteConfig
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    DaggerApp.of(this).appComponent.inject(this)
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
