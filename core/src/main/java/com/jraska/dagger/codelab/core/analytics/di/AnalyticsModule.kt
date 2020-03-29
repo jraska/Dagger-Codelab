@@ -1,5 +1,7 @@
-package com.jraska.dagger.codelab.core.analytics
+package com.jraska.dagger.codelab.core.analytics.di
 
+import com.jraska.dagger.codelab.core.analytics.EventAnalytics
+import com.jraska.dagger.codelab.core.analytics.LibraryEventAnalytics
 import com.jraska.dagger.codelab.core.analytics.lib.AnalyticsLibrary
 import dagger.Module
 import dagger.Provides

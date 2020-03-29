@@ -1,5 +1,6 @@
-package com.jraska.dagger.codelab.core.analytics
+package com.jraska.dagger.codelab.core.analytics.di
 
+import com.jraska.dagger.codelab.core.analytics.EventAnalytics
 import dagger.Component
 import javax.inject.Singleton
 

@@ -1,8 +1,6 @@
-package com.jraska.dagger.codelab.core
+package com.jraska.dagger.codelab.core.analytics
 
-import com.jraska.dagger.codelab.core.analytics.AnalyticsEvent
-import com.jraska.dagger.codelab.core.analytics.DaggerAnalyticsComponent
-import com.jraska.dagger.codelab.core.analytics.LibraryEventAnalytics
+import com.jraska.dagger.codelab.core.analytics.di.DaggerAnalyticsComponent
 import org.junit.Test
 
 class AnalyticsComponentTest {
