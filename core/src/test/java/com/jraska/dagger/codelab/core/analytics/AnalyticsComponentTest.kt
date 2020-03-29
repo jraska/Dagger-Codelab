@@ -10,7 +10,7 @@ class AnalyticsComponentTest {
     val analyticsComponent = object : AnalyticsComponent {
       val eventAnalytics = LibraryEventAnalytics(AnalyticsLibrary(), AnalyticsFilter())
 
-      override fun eventAnalytics(): EventAnalytics {
+      override fun eventAnalytics(): LibraryEventAnalytics {
         return eventAnalytics
       }
     }
@@ -18,7 +18,7 @@ class AnalyticsComponentTest {
     analyticsComponent.eventAnalytics().reportEvent(AnalyticsEvent.create("One"))
     analyticsComponent.eventAnalytics().reportEvent(AnalyticsEvent.create("Two"))
 
-    val analyticsReported = (analyticsComponent.eventAnalytics() as LibraryEventAnalytics).library.inMemoryData
+    val analyticsReported = analyticsComponent.eventAnalytics().library.inMemoryData
     println(analyticsReported)
     assert(analyticsReported.size == 2)
   }
