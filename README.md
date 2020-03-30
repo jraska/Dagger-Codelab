@@ -1,12 +1,13 @@
-[![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
-## What you will learn
-- Wiring together with Android
-  - Where to create and hold instances of components.
-  - Injecting Activities, Injecting Fragments.
-  - Using `@BindsInstance` to bind objects we don't own.
-
-# Section 2: Wiring with Android - Instructions
+# Dagger-Codelab - Section 2 - Wiring with Android  
+  
+## What you will learn  
+- Wiring together with Android  
+  - Where to create and hold instances of components.  
+  - Injecting Activities, Injecting Fragments.  
+  - Using `@BindsInstance` to bind objects we don't own.  
+  
+# Section 2: Wiring with Android - Instructions  
 We can use our `EventAnalytics` in practice. This section will happen within module `app` where you can see `DaggerApp`, which will be our `Application` object, `MainActivity`, which will be a class we will be injecting now and also `AppComponent`, which will be holding the main dependency graph of our application.
 
 We can also see `MainFragment` and `PackageName` classes, which are here to demonstrate other features later. Now let's launch the application.
@@ -63,7 +64,7 @@ The last step is getting an instance of `AppComponent` and call the `inject` met
 // MainActivity.kt - before calling super.onCreate(savedInstanceState)
 DaggerApp.of(this).appComponent.inject(this)
 ```
-We can also remove the usage of `AnalyticsComponent` here. The app will continue to work the same and we can again see our analytics messages in logcat whilst clicking on the FAB.
+We can also remove all the usage of `AnalyticsComponent` now. The app will continue to work the same and we can again see our analytics messages in logcat whilst clicking on the FAB.
 
 ## Task 5: Injecting Context - @BindsInstance
 Now we can try new field of type `PackageName` and set the title of `MainActivity` to have it as title.
