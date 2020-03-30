@@ -1,4 +1,5 @@
 
+
 # Dagger-Codelab - Section 1 - Basics
 
 ## What you will learn
@@ -13,18 +14,17 @@
 First please have a look into the `:core` module and into `com.jraska.dagger.codelab.core.analytics` package. Our first exercise will take place happen here.
 
 You can see interface `EventAnalytics`, which can model a way how our application will publish `AnalyticsEvent` objects. Its implementation `LibraryEventAnalytics` uses `AnalyticsFilter` to filter too long events and has `.lib.AnalyticsLibrary` to model some external dependency.
-You can imagine Google Analytics, Firebase or any other external anlytics framework in place of `.lib.AnalyticsLibrary`
+You can imagine Google Analytics, Firebase or any other external analytics framework in place of `.lib.AnalyticsLibrary`
 
 <img width="350" alt="Screenshot 2020-03-30 at 00 09 20" src="https://user-images.githubusercontent.com/6277721/77862570-c4862d80-721c-11ea-8685-01686ad6524a.png">
 
 There is also `AnalyticsComponent`, which will be our representation of dependency graph and will provide us instances. You can see manual composing of these dependencies within `AnalyticsComponentTest` in `test` sources.
+We will be using `AnalyticsComponentTest` to test our code within this section.
 
 ## Task 1: Adding Dagger 2 dependency.
-To be even able to Dagger 2, we need to add it as a dependency. You can check [Dagger releases] for latest version. We need to add into
-
-`core/build.gradle`
+To be even able to Dagger 2, we need to add it as a dependency. You can check [Dagger releases]([https://github.com/google/dagger/releases](https://github.com/google/dagger/releases)) for latest version.
 ```
-dependencies {
+dependencies {  // core/build.gradle
 // ...
     implementation 'com.google.dagger:dagger:2.27'
     kapt 'com.google.dagger:dagger-compiler:2.27'
@@ -121,6 +121,37 @@ fun provideAnalyticsLibrary(): AnalyticsLibrary {
 
 `AnalyticsComponentTest` will now pass and there will be only one instance of `AnalyticsLibrary` created. We can check `DaggerAnalyticsComponent` how it is done. Dagger uses `DoubleCheck` implementation as an instance holder.
 
-## Task 7: Binding an implementation to an interface
+## Task 7: Providing an implementation to an interface
+`AnalyticsComponent` now provides instances of `LibraryEventAnalytics`, but it might be better to hide this implementation and use the interface `EventAnalytics` instead.
+```
+interface AnalyticsComponent {  // AnalyticsComponent.kt
+  fun eventAnalytics(): EventAnalytics
+```
+If we try to run our `AnalyticsComponentTest`, Dagger will again throw an error telling
+```
+EventAnalytics cannot be provided without an @Provides-annotated method
+```
+From Dagger perspective it looks now like this:
+<img width="559" alt="Screenshot 2020-03-30 at 19 49 27" src="https://user-images.githubusercontent.com/6277721/77944639-94dc3180-72bf-11ea-9536-e9742739a61c.png">
 
-TBD
+Even if `LibraryEventAnalytics` implements `EventAnalytics` interface, we need to explicitly tell Dagger to use `LibraryEventAnalytics` in case someone requests `EventAnalytics` interface instance. One option how to do it is:
+```
+@Provides  // AnalyticsModule.kt
+fun provideEventAnalytics(implementation: LibraryEventAnalytics): EventAnalytics {
+  return implementation
+}
+```
+
+To fix our test, we need to cheat a bit and cast it into `LibraryEventAnalytics`
+```
+// AnalyticsComponentTest.kt
+val analyticsReported = (analyticsComponent.eventAnalytics() as
+LibraryEventAnalytics).library.inMemoryData
+```
+
+**We can now move into section [02-wiring-with-android](https://github.com/jraska/Dagger-Codelab/tree/02-wiring-with-android)**
+
+## Optional tasks
+- Remove `@Singleton` scope from `AnalyticsComponent` and see what happens.
+- Method `provideEventAnalytics` is not the most effective way how to bind implementation to interface. You can use `@Binds` annotation and nested interface `AnalyticsModule.Declarations` as [recommended by Dagger]([https://dagger.dev/faq.html#what-do-i-do-instead](https://dagger.dev/faq.html#what-do-i-do-instead)).
+- We are now still creating unnecessary objects, will you figure out which ones?
