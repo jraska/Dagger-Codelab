@@ -21,7 +21,7 @@ class MainFragment : Fragment() {
 //    super.onResume()
 //
 //    val byeButton = view!!.findViewById<View>(R.id.main_bye_button)
-//    if (config.getBoolean("bye_button")) {
+//    if (config.getBoolean(CONFIG_BYE_BUTTON)) {
 //      byeButton.visibility = View.VISIBLE
 //    } else {
 //      byeButton.visibility = View.GONE
