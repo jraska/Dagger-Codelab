@@ -132,6 +132,7 @@ If we try to run our `AnalyticsComponentTest`, Dagger will again throw an error 
 EventAnalytics cannot be provided without an @Provides-annotated method
 ```
 From Dagger perspective it looks now like this:
+
 <img width="559" alt="Screenshot 2020-03-30 at 19 49 27" src="https://user-images.githubusercontent.com/6277721/77944639-94dc3180-72bf-11ea-9536-e9742739a61c.png">
 
 Even if `LibraryEventAnalytics` implements `EventAnalytics` interface, we need to explicitly tell Dagger to use `LibraryEventAnalytics` in case someone requests `EventAnalytics` interface instance. One option how to do it is:
