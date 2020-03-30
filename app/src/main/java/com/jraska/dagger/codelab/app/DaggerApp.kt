@@ -5,8 +5,6 @@ import android.app.Application
 import androidx.fragment.app.Fragment
 import com.jraska.dagger.codelab.app.di.AppComponent
 import com.jraska.dagger.codelab.app.di.DaggerAppComponent
-import com.jraska.dagger.codelab.core.analytics.di.AnalyticsComponent
-import com.jraska.dagger.codelab.core.analytics.di.DaggerAnalyticsComponent
 import com.jraska.dagger.codelab.core.di.HasAppComponent
 
 open class DaggerApp : Application(), HasAppComponent {
