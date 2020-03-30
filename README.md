@@ -1,13 +1,13 @@
 
-# Dagger-Codelab - Section 2 - Wiring with Android  
+# Dagger-Codelab - Section 2 - Wiring with Android
   
 ## What you will learn  
-- Wiring together with Android  
-  - Where to create and hold instances of components.  
-  - Injecting Activities, Injecting Fragments.  
-  - Using `@BindsInstance` to bind objects we don't own.  
+- Wiring together with Android
+  - Where to create and hold instances of components.
+  - Injecting Activities, Injecting Fragments.
+  - Using `@BindsInstance` to bind objects we don't own.
   
-# Section 2: Wiring with Android - Instructions  
+# Section 2: Wiring with Android - Instructions
 We can use our `EventAnalytics` in practice. This section will happen within module `app` where you can see `DaggerApp`, which will be our `Application` object, `MainActivity`, which will be a class we will be injecting now and also `AppComponent`, which will be holding the main dependency graph of our application.
 
 We can also see `MainFragment` and `PackageName` classes, which are here to demonstrate other features later. Now let's launch the application.
@@ -99,7 +99,7 @@ val appComponent: AppComponent by lazy {  // DaggerApp.kt
 ```
 Now we can run the app and we will see the package name set as title of the activity.
 
-**We can now move into section [03-multiple-modules-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-modules-setup)**
+**We can now move into section [03-multiple-module-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-module-setup)**
 
 ## Optional tasks
 - Look inside and `DaggerAppComponent` and discuss how Dagger generates code.
