@@ -1,8 +1,9 @@
 package com.jraska.dagger.codelab.core.analytics
 
 import com.jraska.dagger.codelab.core.analytics.lib.AnalyticsLibrary
+import javax.inject.Inject
 
-class LibraryEventAnalytics(
+class LibraryEventAnalytics @Inject constructor(
   val library: AnalyticsLibrary,
   val analyticsFilter: AnalyticsFilter
 ) : EventAnalytics {
