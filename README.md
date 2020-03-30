@@ -1,81 +1,113 @@
+[![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
-[![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)  
-  
-# Dagger-Codelab - Section 3 - Multi module setup  
-  
-## What you will learn  
-- Multi-module project setup  
-  - How to compose modules together within AppComponent  
-  - Injecting Activity/Fragment and other dependencies within separate module.  
-  - Sharing instances with other modules.  
+## What you will learn
+- Wiring together with Android
+  - Where to create and hold instances of components.
+  - Injecting Activities, Injecting Fragments.
+  - Using `@BindsInstance` to bind objects we don't own.
 
-# Goal
-- Inject `ConfigActivity` using `appComponent` 
-- Inject `MainFragment` and use the `config` dependency.
-- Launch `ConfigActivity` by clicking on the FAB
+# Section 2: Wiring with Android - Instructions
+We can use our `EventAnalytics` in practice. This section will happen within module `app` where you can see `DaggerApp`, which will be our `Application` object, `MainActivity`, which will be a class we will be injecting now and also `AppComponent`, which will be holding the main dependency graph of our application.
 
+We can also see `MainFragment` and `PackageName` classes, which are here to demonstrate other features later. Now let's launch the application.
 
-# Section 3: Multi module setup - Instructions  
-Now let's have a look how you can let Dagger smoothly manage dependencies within multi module project. Our focus will be code within directory `feature/config`.  
-  
-We can see already prepared `ConfigModule`, which we can use to tell Dagger which dependencies belong there. We can see `ConfigActivity`, which we will use to tweak values of our config and also we can see few other files like `InMemoryConfig`, which is a simple `RemoteConfig` implementation and also `MutableConfig`, which we will use to modify config values.  
-  
-## Task 1: Use RemoteConfig within MainFragment  
-We can start by adding `@Inject` annotation to the `config` field within `MainFragment` and uncommenting the `onResume()` method.  
-```  
-@Inject // MainFragment.kt  
-lateinit var config: RemoteConfig  
-  
-override fun onCreate(savedInstanceState: Bundle?) {  
-  DaggerApp.of(this).appComponent.inject(this)  
-```  
-  
-We also need to add appropriate inject method to `AppComponent` To make Dagger compile, we need to add the `ConfigModule` as well.
-```  
-// AppComponent.kt  
-@Component(modules = [AnalyticsModule::class, ConfigModule::class])  
-interface AppComponent {  
-  fun inject(mainFragment: MainFragment)  
-```  
-  
-## Task 2: Launch the ConfigActivity  
-The easiest way now might be clicking on FAB within `MainActivity`  
-```  
-// MainActivity.kt  
-findViewById<View>(R.id.fab).setOnClickListener {  
-  ConfigActivity.start(this)  
-```  
-We can run the app and click the FAB button. `ConfigActivity` is now crashing and needs to be injected.  
-  
-## Task 3: Inject ConfigActivity  
-Injecting within module will be different from the reason that the `config` module does not have visibility of `AppComponent` or `DaggerApp`, because that one is within `:app` module and the dependencies look like the following:  
-  
-<img width="200" alt="Screenshot 2020-04-01 at 00 14 46" src="https://user-images.githubusercontent.com/6277721/78080419-786af280-73ae-11ea-9af7-2840b1399895.png">  
-  
-We need to somehow bridge this gap. The recommended practice is creating interface within `:config` module and interface `ConfigComponent` with the desired `inject` method.  Note that this component will not use `@Component` annotation.
-```  
-interface ConfigComponent {  // ConfigComponent.kt  
-  fun inject(configActivity: ConfigActivity)  
-```  
-`AppComponent` can implement this interface:  
-```  
-interface AppComponent : ConfigComponent { // AppComponent.kt  
-```  
- We then need to introduce some way how to receive instance of `ConfigComponent`. One option is having a contract, that the `Application` object will implement - the `HasAppComponent` interface. We can then get the instance of `AppComponent` and cast it to out `ConfigComponent`.  
-```  
-@Inject // ConfigActivity.kt  
-lateinit var mutableConfig: MutableConfig  
-  
-override fun onCreate(savedInstanceState: Bundle?) {  
-  ((application as HasAppComponent).appComponent() as ConfigComponent).inject(this)  
-```  
-  
-We can now launch the app, try to open `ConfigActivity` by the FAB and when unchecking the `bye_button` config, the "BYE BUTTON" will disappear from the main screen.  
-  
-You can also check the `AppTest`. If everything is setup correctly, the test will pass.  
-  
-**We can now move into section [04-multibindings](https://github.com/jraska/Dagger-Codelab/tree/04-multibindings)**  
-  
-### Optional Tasks  
-- Can you think about a different way how to pass instances of `AppComponent` into the `ConfigActivity`? How would you do that?  
-- Try to write an extension method `Activity.appComponent` and use it within `ConfigActivity` to reduce the number of casting.
+## Task 1: Create instance of AnalyticsComponent within DaggerApp
+To start with, we can implement the `createAnalyticsComponent` method within `DaggerApp`:
+```
+// DaggerApp.kt
+private fun createAnalyticsComponent(): AnalyticsComponent = DaggerAnalyticsComponent.create()
+```
+
+## Task 2: Pull instance of EventAnalytics from AnalyticsComponent
+In case of clicking on FAB within `MainActivity` the application will crash, because `eventAnalytics` field is not initialised. We can do this in `onCreate` method of `MainActivity`.
+
+```
+// MainActivity.kt
+eventAnalytics = DaggerApp.of(this).analyticsComponent.eventAnalytics()
+```
+When you click on FAB now, you can now see the analytics event in your logcat:
+```
+External system interaction - event: main_onFabClick
+```
+## Task 3: Setup AppComponent
+Although you could receive instances from components like this, it doesn't scale well, because you would have to write method for every single type in use. Therefore we can start using our `AppComponent` to inject `MainActivity` and make this interface new Dagger component with `AnalyticsModule`
+```
+@Singleton // AppComponent.kt
+@Component(modules = [AnalyticsModule::class])
+interface AppComponent {
+```
+
+This will generate `DaggerAppComponent`, which we can instantiate within `DaggerApp`.
+```
+// DaggerApp.kt
+val appComponent: AppComponent by lazy { DaggerAppComponent.create() }
+```
+
+## Task 4: Injecting MainActivity
+Now it is time to use field injection. Field Injection is common way how to inject instances on Android, because we don't create many objects of the framework. Check [Why Dagger on Android is hard]([https://dagger.dev/android](https://dagger.dev/android)).
+
+For this type of injection we need to write `inject(InjectedType)` method into any component, which contains necessary dependencies.
+
+```
+interface AppComponent { // MainActivity.kt
+  fun inject(mainActivity: MainActivity)
+```
+
+We now need to annotate the field `eventAnalytics` with `@Inject`
+```
+@Inject // MainActivity.kt
+lateinit var eventAnalytics: EventAnalytics
+```
+The last step is getting an instance of `AppComponent` and call the `inject` method.
+```
+// MainActivity.kt - before calling super.onCreate(savedInstanceState)
+DaggerApp.of(this).appComponent.inject(this)
+```
+We can also remove the usage of `AnalyticsComponent` here. The app will continue to work the same and we can again see our analytics messages in logcat whilst clicking on the FAB.
+
+## Task 5: Injecting Context - @BindsInstance
+Now we can try new field of type `PackageName` and set the title of `MainActivity` to have it as title.
+```
+@Inject  // MainActivity.kt
+lateinit var packageName: PackageName
+...
+title = packageName.thisAppPackage() // in onCreate method.
+```
+If we try to run the app, we receive error. We are trying to inject `Context` so we need to instruct Dagger where to get it from.
+
+There are many cases where we need to inject an object **we don't own**. For such cases Dagger brings an option to define `@Component.Builder` interface and enables adding `@BindsInstance` methods, accepting instances of such objects.
+
+```
+@Component.Builder // AppComponent.kt
+interface Builder {
+  @BindsInstance
+  fun setContext(context: Context): Builder
+
+  fun build(): AppComponent
+}
+```
+Dagger will generate implementation of `Builder` interface and we can get it with `DaggerAppComponent.builder()` method. The main condition to match is that there is any method, returning the instance of the component -  `fun build(): AppComponent` in our case.
+
+Let's use the builder with `DaggerApp` now:
+```
+val appComponent: AppComponent by lazy {  // DaggerApp.kt
+  DaggerAppComponent.builder()
+    .setContext(this)
+    .build()
+}
+```
+Now we can run the app and we will see the package name set as title of the activity.
+
+**We can now move into section [03-multiple-modules-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-modules-setup)**
+
+## Optional tasks
+- Look inside and `DaggerAppComponent` and discuss how Dagger generates code.
+- What is a problem with following version of `appComponent` setup?
+ ```
+ val appComponent: AppComponent get() {  // DO NOT COPY
+  return DaggerAppComponent.builder()
+    .setContext(this)
+    .build()
+}
+```
+- Why we just don't create `AppComponent` within `MainActivity`. Would it even compile?
