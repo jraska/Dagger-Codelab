@@ -1,5 +1,7 @@
 [![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
+# Dagger-Codelab - Section 2 - Wiring with Android
+
 ## What you will learn
 - Wiring together with Android
   - Where to create and hold instances of components.
@@ -98,7 +100,7 @@ val appComponent: AppComponent by lazy {  // DaggerApp.kt
 ```
 Now we can run the app and we will see the package name set as title of the activity.
 
-**We can now move into section [03-multiple-modules-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-modules-setup)**
+**We can now move into section [03-multiple-module-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-module-setup)**
 
 ## Optional tasks
 - Look inside and `DaggerAppComponent` and discuss how Dagger generates code.
