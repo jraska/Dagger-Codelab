@@ -1,108 +1,113 @@
 [![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
-# Dagger-Codelab - Section 5 - Instrumented Tests
-
 ## What you will learn
-- Instrumented Testing
-  - How to replace dependencies within androidTest.
-  - Using separate component within tests.
-  - How to assert on your analytic events.
+- Wiring together with Android
+  - Where to create and hold instances of components.
+  - Injecting Activities, Injecting Fragments.
+  - Using `@BindsInstance` to bind objects we don't own.
 
-# Goal
-- Verify in `AppTest` that clicking on FAB button triggers analytics event `main_onFabClick`.
+# Section 2: Wiring with Android - Instructions
+We can use our `EventAnalytics` in practice. This section will happen within module `app` where you can see `DaggerApp`, which will be our `Application` object, `MainActivity`, which will be a class we will be injecting now and also `AppComponent`, which will be holding the main dependency graph of our application.
 
-# Section 5: Instrumented Tests - Instructions
-In this section, we will see how we can utilise Dagger to switch dependencies within tests.
+We can also see `MainFragment` and `PackageName` classes, which are here to demonstrate other features later. Now let's launch the application.
 
-Until now, we could have seen commented method call within our `AppTest`.
-```
-// AppTest.kt
-//    assertEventReported()
-```
-
-To make this possible, the following setup will tweak previous `EventAnalytics` implementation to be `FakeEventAnalytics`.
-
-## Task 1: Make DaggerAppComponent overridable
-One way how to tweak things within instrumented tests is to do this within the application object. We can see within `TestRunner`, that we will create instance of `TestDaggerApp` instead of only `DaggerApp` within tests.
-
-To enable overriding of the `AppComponent`, we need to extract its instance creation into separate `open` method.
-
+## Task 1: Create instance of AnalyticsComponent within DaggerApp
+To start with, we can implement the `createAnalyticsComponent` method within `DaggerApp`:
 ```
 // DaggerApp.kt
-val appComponent: AppComponent by lazy {
-  createDaggerComponent()
-}
+private fun createAnalyticsComponent(): AnalyticsComponent = DaggerAnalyticsComponent.create()
+```
 
-open fun createDaggerComponent(): AppComponent {
+## Task 2: Pull instance of EventAnalytics from AnalyticsComponent
+In case of clicking on FAB within `MainActivity` the application will crash, because `eventAnalytics` field is not initialised. We can do this in `onCreate` method of `MainActivity`.
+
+```
+// MainActivity.kt
+eventAnalytics = DaggerApp.of(this).analyticsComponent.eventAnalytics()
+```
+When you click on FAB now, you can now see the analytics event in your logcat:
+```
+External system interaction - event: main_onFabClick
+```
+## Task 3: Setup AppComponent
+Although you could receive instances from components like this, it doesn't scale well, because you would have to write method for every single type in use. Therefore we can start using our `AppComponent` to inject `MainActivity` and make this interface new Dagger component with `AnalyticsModule`
+```
+@Singleton // AppComponent.kt
+@Component(modules = [AnalyticsModule::class])
+interface AppComponent {
+```
+
+This will generate `DaggerAppComponent`, which we can instantiate within `DaggerApp`.
+```
+// DaggerApp.kt
+val appComponent: AppComponent by lazy { DaggerAppComponent.create() }
+```
+
+## Task 4: Injecting MainActivity
+Now it is time to use field injection. Field Injection is common way how to inject instances on Android, because we don't create many objects of the framework. Check [Why Dagger on Android is hard]([https://dagger.dev/android](https://dagger.dev/android)).
+
+For this type of injection we need to write `inject(InjectedType)` method into any component, which contains necessary dependencies.
+
+```
+interface AppComponent { // MainActivity.kt
+  fun inject(mainActivity: MainActivity)
+```
+
+We now need to annotate the field `eventAnalytics` with `@Inject`
+```
+@Inject // MainActivity.kt
+lateinit var eventAnalytics: EventAnalytics
+```
+The last step is getting an instance of `AppComponent` and call the `inject` method.
+```
+// MainActivity.kt - before calling super.onCreate(savedInstanceState)
+DaggerApp.of(this).appComponent.inject(this)
+```
+We can also remove the usage of `AnalyticsComponent` here. The app will continue to work the same and we can again see our analytics messages in logcat whilst clicking on the FAB.
+
+## Task 5: Injecting Context - @BindsInstance
+Now we can try new field of type `PackageName` and set the title of `MainActivity` to have it as title.
+```
+@Inject  // MainActivity.kt
+lateinit var packageName: PackageName
+...
+title = packageName.thisAppPackage() // in onCreate method.
+```
+If we try to run the app, we receive error. We are trying to inject `Context` so we need to instruct Dagger where to get it from.
+
+There are many cases where we need to inject an object **we don't own**. For such cases Dagger brings an option to define `@Component.Builder` interface and enables adding `@BindsInstance` methods, accepting instances of such objects.
+
+```
+@Component.Builder // AppComponent.kt
+interface Builder {
+  @BindsInstance
+  fun setContext(context: Context): Builder
+
+  fun build(): AppComponent
+}
+```
+Dagger will generate implementation of `Builder` interface and we can get it with `DaggerAppComponent.builder()` method. The main condition to match is that there is any method, returning the instance of the component -  `fun build(): AppComponent` in our case.
+
+Let's use the builder with `DaggerApp` now:
+```
+val appComponent: AppComponent by lazy {  // DaggerApp.kt
+  DaggerAppComponent.builder()
+    .setContext(this)
+    .build()
+}
+```
+Now we can run the app and we will see the package name set as title of the activity.
+
+**We can now move into section [03-multiple-modules-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-modules-setup)**
+
+## Optional tasks
+- Look inside and `DaggerAppComponent` and discuss how Dagger generates code.
+- What is a problem with following version of `appComponent` setup?
+ ```
+ val appComponent: AppComponent get() {  // DO NOT COPY
   return DaggerAppComponent.builder()
     .setContext(this)
     .build()
 }
 ```
-
-## Task 2: Create fake module for analytics
-To replace `EventAnalytics` interface with some test double, we have to create a `@Module` satisfying required dependencies - `EventAnalytcs` in our case.
-```
-@Module  // TestDaggerApp.kt
-object FakeAnalyticsModule {
-
-  @Provides
-  @Singleton
-  fun fakeEventAnalytics(): FakeEventAnalytics = FakeEventAnalytics()
-
-  @Provides
-  fun eventAnalytics(fakeEventAnalytics: FakeEventAnalytics): EventAnalytics = fakeEventAnalytics
-}
-```
-
-## Task 3: Create new component for tests
-Now it's time to create a different composition of available modules. The main requirement is the new component will implement the `AppComponent` interface to satisfy all necessary injections. The new component will contain `ConfigModule` and `FakeAnalyticsModule` We can also use `@Component.Factory` instead  of `@Component.Builder`, to see different way of setting up components.
-
-```
-@Singleton  // TestDaggerApp.kt
-@Component(modules = [ConfigModule::class, FakeAnalyticsModule::class])
-interface TestAppComponent : AppComponent {
-  fun fakeEventAnalytics(): FakeEventAnalytics
-
-  @Component.Factory
-  interface Factory {
-    fun create(@BindsInstance context: Context): TestAppComponent
-  }
-}
-```
-
-## Task 4: Tell Gradle to run Dagger within kapt
-We are used to add usually just `kapt`, but to run Dagger annotation processing also for testing sources, we need to add it as `kaptAndroidTest`.
-
-```
-// app/build.gradle
-kaptAndroidTest 'com.google.dagger:dagger-compiler:2.30.1'
-```
-
-## Task 5: Use TestAppComponent and expose `FakeAnalytics`
-Now we need to make sure we create an instance of newly generated `DaggerTestAppComponent` and our property `fakeAnalytics` will return correct instance.
-
-```
-// TestDaggerApp.kt
-val fakeAnalytics =  (appComponent() as TestAppComponent).fakeEventAnalytics()
-
-override fun createDaggerComponent(): AppComponent {
-  return DaggerTestAppComponent.factory().create(this)
-}
-```
-The `AppTest` with uncommented `assertEventReported()` method will now pass.
-
-**We can see the whole solution now at [master](https://github.com/jraska/Dagger-Codelab/tree/master)**
-
-### Optional tasks
-- Have a look at `ConfigTest` and `ConfigTestApp` to see how simple test within module can look like.
-- Try to add `EventAnalytics` dependency into `ConfigActivity` - what happens with the `ConfigTest`? How to fix it?
-
-# 🎉End of the Codelab 🎉 [Feedback form](https://forms.gle/Nfz49ZZGJUXP9r1R7)
-Congratulations! - this is all for now to demonstrate some ways how to utilise Dagger features to enjoy flexible and powerful DI within your app.
-
-There is still lot to learn and try, but hopefully this Codelab can serve you as a reasonable basement, playground and learning resource.
-
-If you feel like there is anything to fix, improve or any other feedback, please open an [Issue]([https://github.com/jraska/Dagger-Codelab/issues/new](https://github.com/jraska/Dagger-Codelab/issues/new)) and also any  [PR]([https://github.com/jraska/Dagger-Codelab/pulls](https://github.com/jraska/Dagger-Codelab/pulls)) is welcome.
-
-Happy coding with Dagger!
+- Why we just don't create `AppComponent` within `MainActivity`. Would it even compile?
