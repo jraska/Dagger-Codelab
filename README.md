@@ -42,16 +42,13 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
 - You can run the codelab yourslef, by following the instructions within each sections.
 - In case of any question, please feel free to [create an issue](https://github.com/jraska/Dagger-Codelab/issues/new) in this repo.
 
-## Basics
+## Now let' start by moving to section you want
+- **[01-basics](https://github.com/jraska/Dagger-Codelab/tree/01-basics)**
+- **[02-wiring-with-android](https://github.com/jraska/Dagger-Codelab/tree/02-wiring-with-android)**
+- **[03-multiple-module-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-module-setup)**
+- **[04-multibindings](https://github.com/jraska/Dagger-Codelab/tree/04-multibindings)**
+- **[05-testing](https://github.com/jraska/Dagger-Codelab/tree/05-testing)**
 
-
-## Wiring with Android
-
-
-## Multiple modules setup
-
-
-## Multibinding
 
 
 ## Component dependency, Testing
