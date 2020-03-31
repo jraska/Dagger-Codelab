@@ -50,10 +50,6 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
 - **[05-testing](https://github.com/jraska/Dagger-Codelab/tree/05-testing)**
 
 
-
-## Component dependency, Testing
-
-
 # References
 - [Android docs](https://developer.android.com/training/dependency-injection/dagger-basics), 
   - [Multi-Module setup](https://developer.android.com/training/dependency-injection/dagger-multi-module)
