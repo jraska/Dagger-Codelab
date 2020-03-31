@@ -10,8 +10,8 @@ import com.jraska.dagger.codelab.core.analytics.di.DaggerAnalyticsComponent
 import com.jraska.dagger.codelab.core.di.HasAppComponent
 
 open class DaggerApp : Application(), HasAppComponent {
-  val appComponent: AppComponent get() {
-    return DaggerAppComponent.builder()
+  val appComponent: AppComponent by lazy {
+    DaggerAppComponent.builder()
       .setContext(this)
       .build()
   }
