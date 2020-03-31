@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.jraska.dagger.codelab.app.R
+import com.jraska.dagger.codelab.core.config.RemoteConfig
 
 class MainFragment : Fragment() {
+
+  lateinit var config: RemoteConfig
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
