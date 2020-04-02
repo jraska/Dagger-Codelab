@@ -27,7 +27,7 @@ class AppTest {
 //    assertEventReported()
     onView(withText("bye_button")).perform(click())
 
-//    pressBack()
+    pressBack()
 
     onView(withId(R.id.main_bye_button)).check(matches(not(isDisplayed())))
   }
