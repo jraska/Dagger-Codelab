@@ -63,6 +63,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 We can now launch the app, try to open `ConfigActivity` by the FAB and when unchecking the `bye_button` config, the "BYE BUTTON" will disappear from the main screen.
 
+You can also now check the `AppTest`. If everything is setup correctly, the test will pass.
+
 **We can now move into section [04-multibindings](https://github.com/jraska/Dagger-Codelab/tree/04-multibindings)**
 
 ### Optional Tasks
