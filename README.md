@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
+
 # Dagger-Codelab - Section 3 - Multi module setup
 
 ## What you will learn
