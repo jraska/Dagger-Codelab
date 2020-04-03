@@ -1,4 +1,4 @@
-
+[![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
 # Dagger-Codelab - Section 1 - Basics
 
