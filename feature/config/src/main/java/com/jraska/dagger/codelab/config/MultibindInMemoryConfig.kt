@@ -1,20 +1,21 @@
 package com.jraska.dagger.codelab.config
 
 import javax.inject.Inject
+import javax.inject.Provider
 
 class MultibindInMemoryConfig @Inject constructor(
-  @JvmSuppressWildcards
-  val initialState: Map<String, Boolean>
+  val initialState: Map<String, @JvmSuppressWildcards Boolean>
 ) : MutableConfig {
-  private val configs = initialState.toMutableMap()
+  private val configs = mutableMapOf<String, Boolean>()
+    .withDefault { initialState[it] ?: false }
 
   override fun set(key: String, value: Boolean) {
     configs[key] = value
   }
 
-  override fun keys(): Set<String> = configs.keys
+  override fun keys(): Set<String> = initialState.keys
 
   override fun getBoolean(key: String): Boolean {
-    return configs[key] ?: false
+    return configs.getValue(key)
   }
 }
