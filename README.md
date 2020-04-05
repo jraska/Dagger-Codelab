@@ -1,10 +1,11 @@
-# Dagger-Codelab - Section 3 - Multi module setup
+[![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
+
+# Dagger-Codelab - Section 5 - Instrumented Tests
 
 ## What you will learn
-- Multi-module project setup
-  - How to compose modules together within AppComponent
-  - Injecting Activity/Fragment and other dependencies within separate module.
-  - Sharing instances with other modules.
+- Instrumented Testing
+  - How to replace dependencies within androidTest.
+  - Using component dependency to replace dependencies in tests.
+  - How to assert on your analytic events.
 
-# Section 3: Multi module setup - Instructions
-
+# Section 5: Instrumented Tests - Instructions
