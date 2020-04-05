@@ -20,6 +20,7 @@ open class DaggerApp : Application(), HasAppComponent {
 
   override fun onCreate() {
     super.onCreate()
+    appComponent.onAppCreateActions().forEach { it.onCreate() }
   }
 
   companion object {
