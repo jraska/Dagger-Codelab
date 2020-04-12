@@ -65,7 +65,7 @@ The last step is getting an instance of `AppComponent` and call the `inject` met
 // MainActivity.kt - before calling super.onCreate(savedInstanceState)
 DaggerApp.of(this).appComponent.inject(this)
 ```
-We can also remove the usage of `AnalyticsComponent` here. The app will continue to work the same and we can again see our analytics messages in logcat whilst clicking on the FAB.
+We can also remove all the usage of `AnalyticsComponent` now. The app will continue to work the same and we can again see our analytics messages in logcat whilst clicking on the FAB.
 
 ## Task 5: Injecting Context - @BindsInstance
 Now we can try new field of type `PackageName` and set the title of `MainActivity` to have it as title.
