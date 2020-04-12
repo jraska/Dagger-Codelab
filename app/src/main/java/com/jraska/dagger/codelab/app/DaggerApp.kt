@@ -16,8 +16,6 @@ open class DaggerApp : Application(), HasAppComponent {
       .build()
   }
 
-  val analyticsComponent: AnalyticsComponent by lazy { createAnalyticsComponent() }
-
   override fun appComponent(): Any {
     return appComponent
   }
@@ -25,8 +23,6 @@ open class DaggerApp : Application(), HasAppComponent {
   override fun onCreate() {
     super.onCreate()
   }
-
-  private fun createAnalyticsComponent(): AnalyticsComponent = DaggerAnalyticsComponent.create()
 
   companion object {
     fun of(activity: Activity): DaggerApp {
