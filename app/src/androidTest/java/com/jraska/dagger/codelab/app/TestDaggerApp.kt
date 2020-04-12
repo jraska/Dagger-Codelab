@@ -10,7 +10,6 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.migration.DisableInstallInCheck
 import javax.inject.Singleton
 
 class TestDaggerApp : DaggerApp() {
@@ -37,7 +36,6 @@ interface TestAppComponent : AppComponent {
 }
 
 @Module
-@DisableInstallInCheck
 object FakeAnalyticsModule {
 
   @Provides
