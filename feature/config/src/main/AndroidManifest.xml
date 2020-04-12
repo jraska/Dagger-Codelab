@@ -3,6 +3,6 @@
   package="com.jraska.dagger.codelab.config">
 
   <application>
-    <activity android:name=".ui.ConfigActivity" />
+    <activity android:name=".ui.ConfigActivity" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
   </application>
 </manifest>

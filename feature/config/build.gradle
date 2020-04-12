@@ -8,6 +8,8 @@ android {
   defaultConfig {
     minSdkVersion 24
     targetSdkVersion 29
+
+    testInstrumentationRunner "com.jraska.dagger.codelab.config.ConfigTestRunner"
   }
 
   compileOptions {
@@ -30,6 +32,12 @@ dependencies {
 
   implementation 'com.google.dagger:dagger:2.27'
   kapt 'com.google.dagger:dagger-compiler:2.27'
+
+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+  androidTestImplementation 'androidx.test:runner:1.2.0'
+  androidTestImplementation 'androidx.test:rules:1.2.0'
+
+  kaptAndroidTest 'com.google.dagger:dagger-compiler:2.27'
 
   testImplementation 'junit:junit:4.13'
 }
