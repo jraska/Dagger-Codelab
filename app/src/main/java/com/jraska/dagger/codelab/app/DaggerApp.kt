@@ -22,7 +22,7 @@ open class DaggerApp : Application(), HasAppComponent {
     super.onCreate()
   }
 
-  private fun createAnalyticsComponent(): AnalyticsComponent = throw NotImplementedError("Run the codelab section")
+  private fun createAnalyticsComponent(): AnalyticsComponent = throw NotImplementedError("Section 02-wiring-with-android : Implement this")
 
   companion object {
     fun of(activity: Activity): DaggerApp {
