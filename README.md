@@ -1,6 +1,8 @@
 # Dagger-Codelab
 Codelab to teach and demonstrate usage of dependency injection with Dagger 2
 
+[![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
+
 # What you will learn
 - About dependency injection(DI) and Inversion of Control(IoC)
   - Introduction to the problem, why it matters.
