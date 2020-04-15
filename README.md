@@ -1,4 +1,3 @@
-
 [![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
 # Dagger-Codelab - Section 5 - Instrumented Tests
@@ -8,6 +7,9 @@
   - How to replace dependencies within androidTest.
   - Using component dependency to replace dependencies in tests.
   - How to assert on your analytic events.
+
+# Goal
+- Verify in `AppTest` that clicking on FAB button triggers analytics event `main_onFabClick`.
 
 # Section 5: Instrumented Tests - Instructions
 In this section, we will see how we can utilise Dagger to switch dependencies within tests.
@@ -23,7 +25,7 @@ To make this possible, the following setup will tweak previous `EventAnalytics` 
 ## Task 1: Make DaggerAppComponent overridable
 One way how to tweak things within instrumented tests is to do this within the application object. We can see within `TestRunner`, that we will create instance of `TestDaggerApp` instead of only `DaggerApp` within tests.
 
-To be able to override the `AppComponent` we need to extract its instance creation into separate `open` method.
+To enable overriding of the `AppComponent`, we need to extract its instance creation into separate `open` method.
 
 ```
 // DaggerApp.kt
@@ -39,7 +41,7 @@ open fun createDaggerComponent(): AppComponent {
 ```
 
 ## Task 2: Create fake module for analytics
-To be able to replace `EventAnalytics` interface with some test double, we have to create a `@Module` satisfying required dependencies - `EventAnalytcs` in our case.
+To replace `EventAnalytics` interface with some test double, we have to create a `@Module` satisfying required dependencies - `EventAnalytcs` in our case.
 ```
 @Module  // TestDaggerApp.kt
 object FakeAnalyticsModule {
@@ -54,7 +56,7 @@ object FakeAnalyticsModule {
 ```
 
 ## Task 3: Create new component for tests
-Now it's time to create a different composition of available modules. The main requirement is the new component will implement the `AppComponent` interface to satisfy all necessary injections etc. The new component will contain `ConfigModule` and `FakeAnalyticsModule` We can also use `@Component.Factory` instead  of `@Component.Builder`, to see different way of setting up components.
+Now it's time to create a different composition of available modules. The main requirement is the new component will implement the `AppComponent` interface to satisfy all necessary injections. The new component will contain `ConfigModule` and `FakeAnalyticsModule` We can also use `@Component.Factory` instead  of `@Component.Builder`, to see different way of setting up components.
 
 ```
 @Singleton  // TestDaggerApp.kt
@@ -104,4 +106,3 @@ There is still lot to learn and try, but hopefully this Codelab can serve you as
 If you feel like there is anything to fix, improve or any other feedback, please open an [Issue]([https://github.com/jraska/Dagger-Codelab/issues/new](https://github.com/jraska/Dagger-Codelab/issues/new)) and also any  [PR]([https://github.com/jraska/Dagger-Codelab/pulls](https://github.com/jraska/Dagger-Codelab/pulls)) is welcome.
 
 Happy coding with Dagger!
-
