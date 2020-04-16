@@ -12,9 +12,9 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
 [Initial presentation slides](https://docs.google.com/presentation/d/1Yy6BdGQiZ8QQfT11Emwxs2F_bjAH4m9A8Ayz4luV2dw/edit?usp=sharing)  
 - Basics of Dagger  
   - How to setup Dagger in your project.  
-  - How to use `@Inject` annotation, craeting simple `@Component`  
+  - How to use `@Inject` annotation, creating simple `@Component`  
   - Adding `@Module`. Discussion when to use modules and when `@Inject` annotation.  
-  - Usage of simle `@Singleton` scope.  
+  - Usage of simple `@Singleton` scope.  
   - Exploring Dagger generated source code and learning from it.  
 - Wiring together with Android  
   - Where to create and hold instances of components.  
@@ -34,7 +34,7 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
   - How to assert on your analytic events.  
   
 # Why this codelab?  
-- Primariliy this should be a learnign resource for any engineer who wants to learn or recap Dagger usage.  
+- Primarily this should be a learning resource for any engineer who wants to learn or recap Dagger usage.  
 - The codelab format is chosen with the belief, that first hand experience leaves stronger memories and the skills are truly learned.  
 - Dagger became more complex over years - making onboarding of new engineers harder.  
 - Dagger became also misused or overused. New engineers see already brownfield and Dagger seems like one of the devils responsible for this leading to lower trust in the tool. Dagger can be almost invisible in your project.  
@@ -43,7 +43,7 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
 # How to use this Codelab  
 - Codelab is split into few smaller sections - each of them can be run independently.  
 - Each section has a branch with a format `{section number}-{area of focus}` e.g. `01-basics`. The branch with higher number is always the solution of the previous section. `master` branch is the final solution of present tasks.  
-- You can run the codelab yourslef, by following the instructions within each sections.  
+- You can run the codelab yourself, by following the instructions within each sections.  
 - In case of any question, please feel free to [create an issue](https://github.com/jraska/Dagger-Codelab/issues/new) in this repo.  
   
 ## Now let' start by moving to section you want  
