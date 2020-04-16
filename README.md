@@ -5,7 +5,7 @@
 ## What you will learn
 - Instrumented Testing
   - How to replace dependencies within androidTest.
-  - Using component dependency to replace dependencies in tests.
+  - Using separate component within tests.
   - How to assert on your analytic events.
 
 # Goal
