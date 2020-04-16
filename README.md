@@ -56,7 +56,7 @@ Now it is time to use field injection. Field Injection is common way how to inje
 For this type of injection we need to write `inject(InjectedType)` method into any component, which contains necessary dependencies.  
   
 ```  
-interface AppComponent { // MainActivity.kt  
+interface AppComponent { // AppComponent.kt  
   fun inject(mainActivity: MainActivity)  
 ```  
   
