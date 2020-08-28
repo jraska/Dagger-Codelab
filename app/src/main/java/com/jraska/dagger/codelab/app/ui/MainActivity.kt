@@ -9,8 +9,10 @@ import com.jraska.dagger.codelab.app.R
 import com.jraska.dagger.codelab.config.ui.ConfigActivity
 import com.jraska.dagger.codelab.core.analytics.AnalyticsEvent
 import com.jraska.dagger.codelab.core.analytics.EventAnalytics
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
   @Inject
@@ -20,8 +22,6 @@ class MainActivity : AppCompatActivity() {
   lateinit var packageName: PackageName
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    DaggerApp.of(this).appComponent.inject(this)
-
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     setSupportActionBar(findViewById(R.id.toolbar))
