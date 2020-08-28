@@ -76,7 +76,7 @@ We are used to add usually just `kapt`, but to run Dagger annotation processing 
 
 ```
 // app/build.gradle
-kaptAndroidTest 'com.google.dagger:dagger-compiler:2.27'
+kaptAndroidTest 'com.google.dagger:dagger-compiler:2.28.3'
 ```
 
 ## Task 5: Use TestAppComponent and expose `FakeAnalytics`
