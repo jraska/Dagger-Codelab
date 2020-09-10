@@ -2,108 +2,142 @@
 
 [![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
-# Dagger-Codelab - Section 07a Hilt option - Testing with Hilt
+# Dagger-Codelab - Section 06a Hilt option - Migration to Hilt
 
 ## What you will learn
-- How to setup Hilt in tests
-- How to migrate existing tests into Dagger Hilt
-- Using Hilt-specific annotations
-- Replacing dependencies in tests
+- How to setup Hilt in the app
+  - How to migrate existing components into Dagger Hilt
+  - Using Hilt-specific annotations
+  - Injection Application, Activities and Fragments with Hilt
 
 # Goal
-- Migrate applications tests to use Hilt
-- Discuss the differences between previous solution, its pros and cons.
+- Migrate or application code to use Hilt
+- Delete `AppComponent` interface and other boilerplate
 
-# Section 07a Hilt option - Testing with Hilt - Instructions
-We will migrate all our testing code to use Dagger Hilt. All necessary dependencies are set up properly and we will be only changing annotations. For setup instructions please check the [Gradle setup](https://dagger.dev/hilt/gradle-setup) section.
+# Section 06a Hilt option - Migration to Hilt - Instructions
+We will migrate all our production code to use Dagger Hilt. All necessary dependencies are set up properly and we will be only changing annotations. For setup instructions please check the [Gradle setup](https://dagger.dev/hilt/gradle-setup) section.
 
-## Task 1: Replace the ConfigTestApp in :config module
-Hilt needs tests to instantiate the `HiltTestApplication`. We can make our instrumented tests to do so by modifying our `ConfigTestRunner`. We can replace previous `ConfigTestApp` and we can delete `ConfigTestApp.kt` as unused now.
-
-```
-// ConfigTestRunner.kt
-  override fun newApplication(cl: ClassLoader, className: String, context: Context): Application {
-    return super.newApplication(cl, HiltTestApplication::class.qualifiedName, context)
-  }
-
-// Delete ConfigTestApp.kt
-```
-
-## Task 2: Setup ConfigTest to run with Hilt
-Each Hilt test needs to be annotated with `@HiltAndroidTest` and needs to include `HiltAndroidRule`.
-```
-// ConfigTest.kt
-@HiltAndroidTest
-class ConfigTest {
-  @get:Rule
-  val hiltRule = HiltAndroidRule(this)
-```
-
-We can now run the `ConfigTest`, it will pass. 🎉
-
-
-## Task 3: Replace the TestDaggerApp in :app module and setup AppTest to run with Hilt
-Similarly like in previous case, we need to replace `TestDaggerApp` for `HiltTestApplication`, we can delete the `TestDaggerApp` and we need to add `@HiltAndroidTest` with `HiltAndroidRule`.
-```
-// TestRunner.kt
-  override fun newApplication(cl: ClassLoader, className: String, context: Context): Application {
-    return super.newApplication(cl, HiltTestApplication::class.qualifiedName, context)
-  }
-
-// Delete TestDaggerApp.kt
-```
-```
-// AppTest.kt
-@HiltAndroidTest
-class AppTest {
-  @get:Rule
-  val hiltRule = HiltAndroidRule(this)
-```
-
-## Task 4: Replace the EventAnalytics dependency to assert analytic events
-We now need to use `FakeEventAnalytics` and bind them with `@BindValue` to Hilt Singleton component. We also need to uninstall the original `AnalyticsModule` to allow replacing of the dependency.
+## Task 1: Make the DaggerApp injectable with Hilt
+When Hilt is already setup injecting the `Application` object happens automatically when added the `@HiltAndroidApp` annotation.
 
 ```
-// AppTest.kt
-@HiltAndroidTest
-@UninstallModules(AnalyticsModule::class)
-class AppTest {
+// DaggerApp.kt
+@HiltAndroidApp
+open class DaggerApp...
+```
+  That's it! You can now add `@Inject` annotated fields into the `DaggerApp`. If you want to quickly try some easy one, one option is `AnalyticsFilter`.
+
+## Task 2: Install all modules into the `SingletonComponent`
+Since we have old `AppComponent` as a singleton, we can simply annotate its modules with `@InstallIn(SingletonComponent::class) `
+```
+// AnalyticsModule.kt
+@InstallIn(SingletonComponent::class)
+object AnalyticsModule {
+```
+```
+// ConfigModule.kt
+@InstallIn(SingletonComponent::class)
+object ConfigModule {
+```
+
+Our app is now ready for injection.
+
+## Task 3. Inject `OnAppCreate` actions into `DaggerApp`
+Add the injected `Set<OnAppCreate>` field inside and execute them after `super.onCreate()`
+
+```
+// DaggerApp.kt
+@Inject
+lateinit var onAppCreateActions: Set<@JvmSuppressWildcards OnAppCreate>
 ...
-  val fakeEventAnalytics = FakeEventAnalytics()
-
-  @BindValue
-  @JvmField // Needs to be here because of Kotlin
-  val eventAnalytics: EventAnalytics = fakeEventAnalytics
-...
-
-  private fun assertEventReported() {
-    val event = fakeEventAnalytics.reportedAnalytics.findLast { it.key == "main_onFabClick" }
-...
+override fun onCreate() {
+  super.onCreate()
+  onAppCreateActions.forEach { it.onCreate() }
 }
 ```
-`AppTest` will now pass.
 
-## Task 5: Understand how Hilt works with testing
-- It is a very good exercise to inspect the generated code and see how Hilt composes the components for the tests. You can jump into the code by finding usages of `eventAnalytics` field.
-- By browsing we end up within `DaggerAppTest_HiltComponents_SingletonC` component, which is a component created uniquely for `AppTest`. Dagger Hilt therefore generates new Singleton component for each `@HiltAndroidTest` class.
-- This component then uses aa generated Factory, which receives instance of the `AppTest` class and pulls out the `FakeEventAnalytics`
-- `HiltTestApplication` then finds the unique component by using the `TestApplicationComponentManager`.
+Hint: App now compiles and runs fine, however the `DaggerApp` now references different instances of `OnAppCreate`, than the rest of the app, because it is still injected by `AppComponent`.
 
-**The solution of this section can be found in [hilt-option-solution](https://github.com/jraska/Dagger-Codelab/tree/hilt-option-solution)**
+## Task 4: Inject `MainActivity`
+Each Android component needs to be annotated with the `@AndroidEntryPoint` annotation. We can also remove the `inject` call.
 
-## Discussion - Testing philosophy
+```
+// MainActivity.kt
+@AndroidEntryPoint
+class MainActivity
+...
+// delete the "DaggerApp.of(this).appComponent.inject(this)" line.
 
-- Testing philosophy is very well explained in the [Dagger Hilt documentation](https://dagger.dev/hilt/testing-philosophy). It's a brilliant article evaluating pros and cons of different approaches.
-- Separate component per test - Hilt instantiates a brand new component instance per test. This is nice and clean however has a high risk in brownfield projects which would keep state in some static place.
-- Build time concern - As the time goes, there might be a huge amount of different components for testing and the kapt step might become too long. This should be measured though and could be a topic of separate article.
+```
 
-## Discussion - Published bindings
+If you would try to build the app now, the build will crash on `PackageName` missing the `Context` binding. Hilt offers `@ApplicationContext` qualifier annotation to explicitly declare which context we inject.
+```
+// PackageName.kt
+@ApplicationContext val context: Context
+```
 
-Published bindings are explained in  [Testing Guide for regular Dagger](https://dagger.dev/dev-guide/testing.html), section. "Organize modules for testability"
+You can now also delete the `fun inject(mainActivity: MainActivity)` from `AppComponent`.
 
-Published binding means a binding, which is used outside of publishing Dagger module. Having only one published binding per module has an advantage, that when this module is not used/uninstalled,
-there has to be only one dependency to fake and replacing modules becomes easy to achieve correct binding graph. If there is too many published bindings, the faking becomes hard and inconvenient.
+## Task 5: Inject `MainFragment`
+We can continue within the migration to Hilt by adding the `@AndroidEntryPoint` again and removing the `inject(MainFragment)` call. Before migrating the `MainFragment`, please check that when clicking on the FAB and disabling the `bye_button` , the button disappears.
 
-However the best practice is difficult to enforce, because we usually don't have full visibility whilst looking on the module which of the provided dependencies re being used out of the module.
-A good practice can be having all methods publishing Kotlin `internal` types except one method publishing a public one and utilise Gradle modules to get advantage of the internal visibility.
-Other ideas for a practice or enforcement are up to discussion. Feel free to start an issue.
+```
+// MainFragment.kt
+@AndroidEntryPoint
+class MainFragment
+
+// Delete whole `onCreate` method override as the injection was the single action.
+```
+
+⚠ When you will run the app, you can see something strange.
+
+The `bye_button` config no longer works. Why?
+<details>
+  <summary>Expand for answer</summary>
+
+  There are 2 different instances of `RemoteConfig` even if it is marked as `@Singleton` in `ConfigModule`. The reason for that is there are now actually 2 independent components.
+
+  1. Hilt `DaggerDaggerApp_HiltComponents_SingletonC` injecting `MainFragment`
+  2. `DaggerAppComponent` injecting `ConfigActivity`
+
+Each of these components is a separate world even if they share `ConfigModule`, however they don't share any instances!
+
+This may cause pain and unexpected bugs whilst migrating to Hilt.
+
+To share instances, you can for example use some proxy module, pulling your `AppComponent` from somewhere (probably static :( ) and providing certain dependencies to Hilt. If you know about nicer solution how to share instances between `AppComponent` and Hilt singleton component, please open an issue. Thanks!
+</details>
+
+## Task 6: Inject ConfigActivity
+Let's fix the bug above by moving `ConfigActivity` into Hilt world.
+
+```
+// ConfigActivity.kt
+@AndroidEntryPoint
+class ConfigActivity
+
+// Delete `ConfigComponent`, `inject` call and related code.
+```
+When we run the app again, the bug is fixed and everything works as before again.
+
+## Task 7: Delete `AppComponent`
+We now moved fully our production code to Hilt generated components. It's time for cleanup.
+We can now delete `AppComponent.kt`, `HasAppComponent.kt` and all related code in `DaggerApp.kt`.
+
+The final `DaggerApp.kt` should look like:
+```
+@HiltAndroidApp
+open class DaggerApp : Application() {
+  @Inject
+  lateinit var onAppCreateActions: Set<@JvmSuppressWildcards OnAppCreate>
+
+  override fun onCreate() {
+    super.onCreate()
+    onAppCreateActions.forEach { it.onCreate() }
+  }
+}
+```
+
+Here we can see the main intentions of Dagger Hilt - removing common setup boilerplate, manual `inject` calls and need for interfaces like `HasAppComponent` and `ConfigComponent` to wire things together.
+
+
+**Due to changed Dagger structure, our tests will not compile anymore. Let's fix them in [07-hilt-option-testing](https://github.com/jraska/Dagger-Codelab/tree/07-hilt-option-testing)**
