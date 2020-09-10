@@ -10,18 +10,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jraska.dagger.codelab.config.MutableConfig
-import com.jraska.dagger.codelab.config.di.ConfigComponent
-import com.jraska.dagger.codelab.core.di.HasAppComponent
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ConfigActivity : AppCompatActivity() {
 
   @Inject
   lateinit var mutableConfig: MutableConfig
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    ((application as HasAppComponent).appComponent() as ConfigComponent).inject(this)
-
     super.onCreate(savedInstanceState)
 
     setupView()
