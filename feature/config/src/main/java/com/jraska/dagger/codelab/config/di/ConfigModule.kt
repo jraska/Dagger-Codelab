@@ -7,12 +7,14 @@ import com.jraska.dagger.codelab.core.app.OnAppCreate
 import com.jraska.dagger.codelab.core.config.RemoteConfig
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.migration.DisableInstallInCheck
 import dagger.multibindings.IntoMap
 import dagger.multibindings.IntoSet
 import dagger.multibindings.StringKey
 import javax.inject.Singleton
 
 @Module
+@DisableInstallInCheck
 object ConfigModule {
 
   @Singleton

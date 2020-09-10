@@ -11,6 +11,9 @@ dependencies {
   implementation 'com.google.dagger:dagger:2.30.1'
   kapt 'com.google.dagger:dagger-compiler:2.30.1'
 
+  implementation "com.google.dagger:hilt-core:2.30.1-alpha"
+  kapt "com.google.dagger:hilt-compiler:2.30.1-alpha"
+
   testImplementation 'junit:junit:4.13.1'
 }
 
