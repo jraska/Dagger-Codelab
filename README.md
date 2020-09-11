@@ -1,113 +1,143 @@
+
+
 [![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
+# Dagger-Codelab - Section 06a Hilt option - Migration to Hilt
+
 ## What you will learn
-- Wiring together with Android
-  - Where to create and hold instances of components.
-  - Injecting Activities, Injecting Fragments.
-  - Using `@BindsInstance` to bind objects we don't own.
+- How to setup Hilt in the app
+  - How to migrate existing components into Dagger Hilt
+  - Using Hilt-specific annotations
+  - Injection Application, Activities and Fragments with Hilt
 
-# Section 2: Wiring with Android - Instructions
-We can use our `EventAnalytics` in practice. This section will happen within module `app` where you can see `DaggerApp`, which will be our `Application` object, `MainActivity`, which will be a class we will be injecting now and also `AppComponent`, which will be holding the main dependency graph of our application.
+# Goal
+- Migrate or application code to use Hilt
+- Delete `AppComponent` interface and other boilerplate
 
-We can also see `MainFragment` and `PackageName` classes, which are here to demonstrate other features later. Now let's launch the application.
+# Section 06a Hilt option - Migration to Hilt - Instructions
+We will migrate all our production code to use Dagger Hilt. All necessary dependencies are set up properly and we will be only changing annotations. For setup instructions please check the [Gradle setup](https://dagger.dev/hilt/gradle-setup) section.
 
-## Task 1: Create instance of AnalyticsComponent within DaggerApp
-To start with, we can implement the `createAnalyticsComponent` method within `DaggerApp`:
+## Task 1: Make the DaggerApp injectable with Hilt
+When Hilt is already setup injecting the `Application` object happens automatically when added the `@HiltAndroidApp` annotation.
+
 ```
 // DaggerApp.kt
-private fun createAnalyticsComponent(): AnalyticsComponent = DaggerAnalyticsComponent.create()
+@HiltAndroidApp
+open class DaggerApp...
+```
+  That's it! You can now add `@Inject` annotated fields into the `DaggerApp`. If you want to quickly try some easy one, one option is `AnalyticsFilter`.
+
+## Task 2: Install all modules into the `SingletonComponent`
+Since we have old `AppComponent` as a singleton, we can simply annotate its modules with `@InstallIn(SingletonComponent::class) `
+```
+// AnalyticsModule.kt
+@InstallIn(SingletonComponent::class)
+object AnalyticsModule {
+```
+```
+// ConfigModule.kt
+@InstallIn(SingletonComponent::class)
+object ConfigModule {
 ```
 
-## Task 2: Pull instance of EventAnalytics from AnalyticsComponent
-In case of clicking on FAB within `MainActivity` the application will crash, because `eventAnalytics` field is not initialised. We can do this in `onCreate` method of `MainActivity`.
+Our app is now ready for injection.
+
+## Task 3. Inject `OnAppCreate` actions into `DaggerApp`
+Add the injected `Set<OnAppCreate>` field inside and execute them after `super.onCreate()`
+
+```
+// DaggerApp.kt
+@Inject
+lateinit var onAppCreateActions: Set<@JvmSuppressWildcards OnAppCreate>
+...
+override fun onCreate() {
+  super.onCreate()
+  onAppCreateActions.forEach { it.onCreate() }
+}
+```
+
+Hint: App now compiles and runs fine, however the `DaggerApp` now references different instances of `OnAppCreate`, than the rest of the app, because it is still injected by `AppComponent`.
+
+## Task 4: Inject `MainActivity`
+Each Android component needs to be annotated with the `@AndroidEntryPoint` annotation. We can also remove the `inject` call.
 
 ```
 // MainActivity.kt
-eventAnalytics = DaggerApp.of(this).analyticsComponent.eventAnalytics()
-```
-When you click on FAB now, you can now see the analytics event in your logcat:
-```
-External system interaction - event: main_onFabClick
-```
-## Task 3: Setup AppComponent
-Although you could receive instances from components like this, it doesn't scale well, because you would have to write method for every single type in use. Therefore we can start using our `AppComponent` to inject `MainActivity` and make this interface new Dagger component with `AnalyticsModule`
-```
-@Singleton // AppComponent.kt
-@Component(modules = [AnalyticsModule::class])
-interface AppComponent {
-```
-
-This will generate `DaggerAppComponent`, which we can instantiate within `DaggerApp`.
-```
-// DaggerApp.kt
-val appComponent: AppComponent by lazy { DaggerAppComponent.create() }
-```
-
-## Task 4: Injecting MainActivity
-Now it is time to use field injection. Field Injection is common way how to inject instances on Android, because we don't create many objects of the framework. Check [Why Dagger on Android is hard]([https://dagger.dev/android](https://dagger.dev/android)).
-
-For this type of injection we need to write `inject(InjectedType)` method into any component, which contains necessary dependencies.
-
-```
-interface AppComponent { // MainActivity.kt
-  fun inject(mainActivity: MainActivity)
-```
-
-We now need to annotate the field `eventAnalytics` with `@Inject`
-```
-@Inject // MainActivity.kt
-lateinit var eventAnalytics: EventAnalytics
-```
-The last step is getting an instance of `AppComponent` and call the `inject` method.
-```
-// MainActivity.kt - before calling super.onCreate(savedInstanceState)
-DaggerApp.of(this).appComponent.inject(this)
-```
-We can also remove the usage of `AnalyticsComponent` here. The app will continue to work the same and we can again see our analytics messages in logcat whilst clicking on the FAB.
-
-## Task 5: Injecting Context - @BindsInstance
-Now we can try new field of type `PackageName` and set the title of `MainActivity` to have it as title.
-```
-@Inject  // MainActivity.kt
-lateinit var packageName: PackageName
+@AndroidEntryPoint
+class MainActivity
 ...
-title = packageName.thisAppPackage() // in onCreate method.
-```
-If we try to run the app, we receive error. We are trying to inject `Context` so we need to instruct Dagger where to get it from.
-
-There are many cases where we need to inject an object **we don't own**. For such cases Dagger brings an option to define `@Component.Builder` interface and enables adding `@BindsInstance` methods, accepting instances of such objects.
+// delete the "DaggerApp.of(this).appComponent.inject(this)" line.
 
 ```
-@Component.Builder // AppComponent.kt
-interface Builder {
-  @BindsInstance
-  fun setContext(context: Context): Builder
 
-  fun build(): AppComponent
+If you would try to build the app now, the build will crash on `PackageName` missing the `Context` binding. Hilt offers `@ApplicationContext` qualifier annotation to explicitly declare which context we inject.
+```
+// PackageName.kt
+@ApplicationContext val context: Context
+```
+
+You can now also delete the `fun inject(mainActivity: MainActivity)` from `AppComponent`.
+
+## Task 5: Inject `MainFragment`
+We can continue within the migration to Hilt by adding the `@AndroidEntryPoint` again and removing the `inject(MainFragment)` call. Before migrating the `MainFragment`, please check that when clicking on the FAB and disabling the `bye_button` , the button disappears.
+
+```
+// MainFragment.kt
+@AndroidEntryPoint
+class MainFragment
+
+// Delete whole `onCreate` method override as the injection was the single action.
+```
+
+⚠ When you will run the app, you can see something strange.
+
+The `bye_button` config no longer works. Why?
+<details>
+  <summary>Expand for answer</summary>
+
+  There are 2 different instances of `RemoteConfig` even if it is marked as `@Singleton` in `ConfigModule`. The reason for that is there are now actually 2 independent components.
+
+  1. Hilt `DaggerDaggerApp_HiltComponents_SingletonC` injecting `MainFragment`
+  2. `DaggerAppComponent` injecting `ConfigActivity`
+
+Each of these components is a separate world even if they share `ConfigModule`, however they don't share any instances!
+
+This may cause pain and unexpected bugs whilst migrating to Hilt.
+
+To share instances, you can for example use some proxy module, pulling your `AppComponent` from somewhere (probably static :( ) and providing certain dependencies to Hilt. If you know about nicer solution how to share instances between `AppComponent` and Hilt singleton component, please open an issue. Thanks!
+</details>
+
+## Task 6: Inject ConfigActivity
+Let's fix the bug above by moving `ConfigActivity` into Hilt world.
+
+```
+// ConfigActivity.kt
+@AndroidEntryPoint
+class ConfigActivity
+
+// Delete `ConfigComponent`, `inject` call and related code.
+```
+When we run the app again, the bug is fixed and everything works as before again.
+
+## Task 7: Delete `AppComponent`
+We now moved fully our production code to Hilt generated components. It's time for cleanup.
+We can now delete `AppComponent.kt`, `HasAppComponent.kt` and all related code in `DaggerApp.kt`.
+
+The final `DaggerApp.kt` should look like:
+```
+@HiltAndroidApp
+open class DaggerApp : Application() {
+  @Inject
+  lateinit var onAppCreateActions: Set<@JvmSuppressWildcards OnAppCreate>
+
+  override fun onCreate() {
+    super.onCreate()
+    onAppCreateActions.forEach { it.onCreate() }
+  }
 }
 ```
-Dagger will generate implementation of `Builder` interface and we can get it with `DaggerAppComponent.builder()` method. The main condition to match is that there is any method, returning the instance of the component -  `fun build(): AppComponent` in our case.
 
-Let's use the builder with `DaggerApp` now:
-```
-val appComponent: AppComponent by lazy {  // DaggerApp.kt
-  DaggerAppComponent.builder()
-    .setContext(this)
-    .build()
-}
-```
-Now we can run the app and we will see the package name set as title of the activity.
+Here we can see the main intentions of Dagger Hilt - removing common setup boilerplate, manual `inject` calls and need for interfaces like `HasAppComponent` and `ConfigComponent` to wire things together.
 
-**We can now move into section [03-multiple-modules-setup](https://github.com/jraska/Dagger-Codelab/tree/03-multiple-modules-setup)**
 
-## Optional tasks
-- Look inside and `DaggerAppComponent` and discuss how Dagger generates code.
-- What is a problem with following version of `appComponent` setup?
- ```
- val appComponent: AppComponent get() {  // DO NOT COPY
-  return DaggerAppComponent.builder()
-    .setContext(this)
-    .build()
-}
-```
-- Why we just don't create `AppComponent` within `MainActivity`. Would it even compile?
+**Due to changed Dagger structure, our tests will not compile anymore. Let's fix them in [07-hilt-option-testing](https://github.com/jraska/Dagger-Codelab/tree/07-hilt-option-testing)**
