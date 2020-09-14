@@ -140,4 +140,4 @@ open class DaggerApp : Application() {
 Here we can see the main intentions of Dagger Hilt - removing common setup boilerplate, manual `inject` calls and need for interfaces like `HasAppComponent` and `ConfigComponent` to wire things together.
 
 
-**Due to changed Dagger structure, our tests will not compile anymore. Let's fix them in [07-hilt-option-testing](https://github.com/jraska/Dagger-Codelab/tree/07-hilt-option-testing)**
+**Due to changed Dagger structure, our tests will not compile anymore. Let's fix them in [07a-hilt-option-testing](https://github.com/jraska/Dagger-Codelab/tree/07a-hilt-option-testing)**
