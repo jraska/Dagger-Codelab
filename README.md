@@ -1,4 +1,6 @@
+# Solution branch of moving the project to Hilt
 
+Last exercise tasks are kept for convenvience when browsing the solution.
 
 [![CircleCI](https://circleci.com/gh/jraska/Dagger-Codelab.svg?style=svg)](https://circleci.com/gh/jraska/Dagger-Codelab)
 
