@@ -30,8 +30,15 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
   - Discuss which problems can multibinding solve.  
 - Instrumented Testing  
   - How to replace dependencies within `androidTest`.  
-  - Using component dependency to replace dependencies in tests.  
+  - Using separate component to replace dependencies in tests.  
   - How to assert on your analytic events.  
+- Dagger Hilt migration
+  - Setting up Dagger Hilt in the project.
+  - How to Migrate project to Hilt
+- Instrumented testing with Dagger Hilt
+  - Setting up testing in project.
+  - Replacing dependencies in tests
+  - Discussing Hilt pros and cons.
   
 # Why this codelab?  
 - Primarily this should be a learning resource for any engineer who wants to learn or recap Dagger usage.  
@@ -53,6 +60,12 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
 - **[04-multibindings](https://github.com/jraska/Dagger-Codelab/tree/04-multibindings)**  
 - **[05-testing](https://github.com/jraska/Dagger-Codelab/tree/05-testing)**  
   
+#### Dagger Hilt Option
+If you would like to see how would the current project look like in Dagger Hilt check the extra exercises:
+- **[06a-hilt-option-migration](https://github.com/jraska/Dagger-Codelab/tree/06a-hilt-option-migration)**  
+- **[07a-hilt-option-testing](https://github.com/jraska/Dagger-Codelab/tree/07a-hilt-option-testing)** 
+
+With solution at [08a-hilt-option-solution](https://github.com/jraska/Dagger-Codelab/tree/08a-hilt-option-solution)
   
 # References  
 - [Android docs](https://developer.android.com/training/dependency-injection/dagger-basics),  
@@ -62,7 +75,10 @@ Codelab to teach and demonstrate usage of dependency injection with Dagger 2
   - [Android setup](https://dagger.dev/android) explains why we use field injection.  
   - [Official tutorial](https://dagger.dev/tutorial/)  
   - [Multibindings](https://dagger.dev/multibindings.html)  
-  - [`@Binds`/`@Provides` discussion](https://dagger.dev/faq.html#what-do-i-do-instead)  
+  - [`@Binds`/`@Provides` discussion](https://dagger.dev/faq.html#what-do-i-do-instead)
+- [Dagger Hilt](https://dagger.dev/hilt/)
+  - [Hilt components](https://dagger.dev/hilt/components)
+  - [Hilt Testing Philosophy](https://dagger.dev/hilt/testing-philosophy)
 - [Gregory Kick - DAGGER 2 - A New Type of dependency injection (2014)](https://www.youtube.com/watch?v=oK_XtfXPkqw) - Recommended resource to understand the history of DI and why Dagger 2 exists.  
 - [Gregory Kick - Dagger to on MCE^3 (2016)](https://www.youtube.com/watch?v=iwjXqRlEevg) - Introduction of main Dagger features as we know them now like Multibindings and the rationale behind them.  
 - [Josef Raska - 3 Years of Happy Marriage With Dagger 2 (2018)](https://proandroiddev.com/3-years-of-happy-marriage-with-dagger-2-b1e1e0febaa7) - Recap of which problems Dagger solved and how it moved Android development forward, even if it might not seem obvious now.  
