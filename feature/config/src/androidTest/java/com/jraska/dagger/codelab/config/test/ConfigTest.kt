@@ -6,10 +6,16 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.rule.ActivityTestRule
 import com.jraska.dagger.codelab.config.ui.ConfigActivity
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 
+@HiltAndroidTest
 class ConfigTest {
+  @get:Rule
+  val hiltRule = HiltAndroidRule(this)
+
   @get:Rule
   val activityRule = ActivityTestRule(ConfigActivity::class.java)
 

@@ -8,16 +8,33 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.rule.ActivityTestRule
+import com.jraska.dagger.codelab.app.FakeEventAnalytics
 import com.jraska.dagger.codelab.app.R
-import com.jraska.dagger.codelab.app.reportedAnalytics
 import com.jraska.dagger.codelab.app.ui.MainActivity
+import com.jraska.dagger.codelab.core.analytics.EventAnalytics
+import com.jraska.dagger.codelab.core.analytics.di.AnalyticsModule
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
 
+@HiltAndroidTest
+@UninstallModules(AnalyticsModule::class)
 class AppTest {
   @get:Rule
+  val hiltRule = HiltAndroidRule(this)
+
+  @get:Rule
   val activityRule = ActivityTestRule(MainActivity::class.java)
+
+  val fakeEventAnalytics = FakeEventAnalytics()
+
+  @BindValue
+  @JvmField
+  val eventAnalytics: EventAnalytics = fakeEventAnalytics
 
   @Test
   fun clickingDisablesButton() {
@@ -33,7 +50,7 @@ class AppTest {
   }
 
   private fun assertEventReported() {
-    val event = activityRule.reportedAnalytics().findLast { it.key == "main_onFabClick" }
+    val event = fakeEventAnalytics.reportedAnalytics.findLast { it.key == "main_onFabClick" }
     if (event == null) {
       throw IllegalStateException("Fab event click not found")
     }
