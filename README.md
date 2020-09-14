@@ -89,7 +89,7 @@ class AppTest {
 - This component then uses aa generated Factory, which receives instance of the `AppTest` class and pulls out the `FakeEventAnalytics`
 - `HiltTestApplication` then finds the unique component by using the `TestApplicationComponentManager`.
 
-**The solution of this section can be found in [hilt-option-solution](https://github.com/jraska/Dagger-Codelab/tree/hilt-option-solution)**
+**The solution of this section can be found in [hilt-option-solution](https://github.com/jraska/Dagger-Codelab/tree/08a-hilt-option-solution)**
 
 ## Discussion - Testing philosophy
 
