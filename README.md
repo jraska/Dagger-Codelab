@@ -79,6 +79,7 @@ With solution at [08a-hilt-option-solution](https://github.com/jraska/Dagger-Cod
 - [Dagger Hilt](https://dagger.dev/hilt/)
   - [Hilt components](https://dagger.dev/hilt/components)
   - [Hilt Testing Philosophy](https://dagger.dev/hilt/testing-philosophy)
+- [Square - Anvil](https://github.com/square/anvil) Kotlin compiler plugin to automatically generate components for the applcation modules.
 - [Gregory Kick - DAGGER 2 - A New Type of dependency injection (2014)](https://www.youtube.com/watch?v=oK_XtfXPkqw) - Recommended resource to understand the history of DI and why Dagger 2 exists.  
 - [Gregory Kick - Dagger to on MCE^3 (2016)](https://www.youtube.com/watch?v=iwjXqRlEevg) - Introduction of main Dagger features as we know them now like Multibindings and the rationale behind them.  
 - [Josef Raska - 3 Years of Happy Marriage With Dagger 2 (2018)](https://proandroiddev.com/3-years-of-happy-marriage-with-dagger-2-b1e1e0febaa7) - Recap of which problems Dagger solved and how it moved Android development forward, even if it might not seem obvious now.  
