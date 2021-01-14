@@ -30,14 +30,14 @@ dependencies {
   implementation 'androidx.recyclerview:recyclerview:1.1.0'
   implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
 
-  implementation 'com.google.dagger:dagger:2.29.1'
-  kapt 'com.google.dagger:dagger-compiler:2.29.1'
+  implementation 'com.google.dagger:dagger:2.30.1'
+  kapt 'com.google.dagger:dagger-compiler:2.30.1'
 
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
   androidTestImplementation 'androidx.test:runner:1.3.0'
   androidTestImplementation 'androidx.test:rules:1.2.0'
 
-  kaptAndroidTest 'com.google.dagger:dagger-compiler:2.29.1'
+  kaptAndroidTest 'com.google.dagger:dagger-compiler:2.30.1'
 
   testImplementation 'junit:junit:4.13'
 }

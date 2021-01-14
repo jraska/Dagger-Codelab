@@ -31,8 +31,8 @@ To be even able to use Dagger 2, we need to add it as a dependency. You can chec
 ```
 dependencies {  // core/build.gradle
 // ...
-    implementation 'com.google.dagger:dagger:2.29.1'
-    kapt 'com.google.dagger:dagger-compiler:2.29.1'
+    implementation 'com.google.dagger:dagger:2.30.1'
+    kapt 'com.google.dagger:dagger-compiler:2.30.1'
 // ...
 }
 
