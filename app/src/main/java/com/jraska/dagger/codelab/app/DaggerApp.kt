@@ -30,7 +30,7 @@ open class DaggerApp : Application(), HasAppComponent {
     }
 
     fun of(fragment: Fragment): DaggerApp {
-      return of(fragment.activity!!)
+      return of(fragment.requireActivity())
     }
   }
 }
