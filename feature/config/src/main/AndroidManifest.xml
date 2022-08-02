@@ -1,8 +1,10 @@
-<manifest
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.jraska.dagger.codelab.config">
 
   <application>
-    <activity android:name=".ui.ConfigActivity" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+    <activity
+      android:name=".ui.ConfigActivity"
+      android:exported="true"
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
   </application>
 </manifest>

@@ -1,21 +1,21 @@
 buildscript {
   ext {
-    kotlin_version = '1.4.21'
+    kotlin_version = '1.7.10'
   }
   repositories {
-    jcenter()
+    mavenCentral()
     google()
   }
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath 'com.android.tools.build:gradle:4.0.2'
+    classpath 'com.android.tools.build:gradle:7.2.1'
   }
 }
 
 allprojects {
   repositories {
     google()
-    jcenter()
+    mavenCentral()
   }
 }
 
