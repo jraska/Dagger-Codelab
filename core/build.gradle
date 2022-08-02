@@ -1,8 +1,20 @@
-apply plugin: 'kotlin'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 repositories {
   mavenCentral()
+  google()
+}
+
+android {
+  compileSdkVersion 31
+
+  defaultConfig {
+    minSdkVersion 24
+    targetSdkVersion 31
+  }
 }
 
 dependencies {
